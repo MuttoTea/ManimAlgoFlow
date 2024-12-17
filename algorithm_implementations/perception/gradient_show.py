@@ -22,7 +22,7 @@ def ackley(x1, x2):
 
 def rastrigin(x1, x2):
     """
-    Rastrigin 函数
+    Rastrigin function
     """
     return (
         20
@@ -31,6 +31,53 @@ def rastrigin(x1, x2):
         - 10 * (torch.cos(2 * torch.pi * x1) + torch.cos(2 * torch.pi * x2))
     )
 
+def rosenbrock(x1, x2, a=1, b=100):
+    """
+    Rosenbrock function
+    """
+    return (a - x1) ** 2 + b * (x2 - x1**2) ** 2
+
+def booth(x1, x2):
+    """
+    Booth function
+    """
+    return (x1 + 2 * x2 - 7) ** 2 + (2 * x1 + x2 - 5) ** 2
+
+def beale(x1, x2):
+    """
+    Beale function
+    """
+    return (
+        (1.5 - x1 + x1 * x2) ** 2
+        + (2.25 - x1 + x1 * x2**2) ** 2
+        + (2.625 - x1 + x1 * x2**3) ** 2
+    )
+
+def schaffer(x1, x2):
+    """
+    Schaffer function
+    """
+    num = (torch.sin((x1**2 + x2**2)**2)**2) - 0.5
+    den = (1 + 0.001*(x1**2 + x2**2))**2 
+    return 0.5 + num/den
+
+def matyas(x1, x2):
+    """
+    Matyas function
+    """
+    return 0.26 * (x1**2 + x2**2) - 0.48 * x1 * x2
+
+def easom(x1, x2):
+    """
+    Easom function
+    """
+    return -torch.cos(x1) * torch.cos(x2) * torch.exp(-((x1 - torch.pi) ** 2 + (x2 - torch.pi) ** 2))
+
+def styblinski_tang(x1, x2):
+    """
+    Styblinski-Tang function
+    """
+    return 0.5 * (x1**4 - 16 * x1**2 + 5 * x1 + x2**4 - 16 * x2**2 + 5 * x2)
 
 # Using PyTorch to implement the gradient descent algorithm to find the function's minimum
 def gradient_descent_pytorch(func, learning_rate, tolerance, max_iters, start_point):
@@ -141,6 +188,55 @@ def main():
             "x2_range": [-40, 40],
             "start_point": [-1.2, 1],
         },
+        "4": {
+            "func": rosenbrock,
+            "name": "rosenbrock function",
+            "x1_range": [-40, 40],
+            "x2_range": [-40, 40],
+            "start_point": [-1.2, 1],
+        },
+        "5": {
+            "func": booth,
+            "name": "booth function",
+            "x1_range": [-40, 40],
+            "x2_range": [-40, 40],
+            "start_point": [1, 3],
+        },
+        "6": {
+            "func": beale,
+            "name": "beale function",
+            "x1_range": [-60, 60],
+            "x2_range": [-60, 60],
+            "start_point": [-1.2, 1],
+        },
+        "7": {
+            "func": schaffer,
+            "name": "schaffer function",
+            "x1_range": [-10, 10],
+            "x2_range": [-10, 10],
+            "start_point": [-1.2, 1],
+        },
+        "8": {
+            "func": matyas,
+            "name": "matyas function",
+            "x1_range": [-10, 10],
+            "x2_range": [-10, 10],
+            "start_point": [-1.2, 1],
+        },
+        "9": {
+            "func": easom,
+            "name": "easom function",
+            "x1_range": [-25, 25],
+            "x2_range": [-25, 25],
+            "start_point": [-1.2, 1],
+        },
+        "10": {
+            "func": styblinski_tang,
+            "name": "styblinski-tang function",
+            "x1_range": [-20, 20],
+            "x2_range": [-20, 20],
+            "start_point": [-1.2, 1],
+        },
     }
 
     # Select function
@@ -148,7 +244,14 @@ def main():
     print("1. Himmelblau function")
     print("2. Ackley function")
     print("3. rastrigin function")
-    choice = input("Enter your choice (1 ~ 3): ")
+    print("4. rosenbrock function")
+    print("5. booth function")
+    print("6. beale function")
+    print("7. schaffer function")
+    print("8. matyas function")
+    print("9. easom function")
+    print("10. styblinski-tang function")
+    choice = input("Enter your choice (1 ~ 10): ")
     if choice not in functions:
         print("Invalid choice, please try again.")
         return
@@ -159,7 +262,8 @@ def main():
     tolerance = 1e-6
     max_iters = 1000
 
-    print(functions[choice]["start_point"])
+    # print(functions[choice]["start_point"])
+
     # Reform gradient descent to obtain the path
     # path = gradient_descent_pytorch(functions[choice]['func'], learning_rate, tolerance, max_iters, functions[choice]['start_point'])
 
