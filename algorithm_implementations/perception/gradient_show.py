@@ -219,6 +219,87 @@ def plot_function(func, x1_range, x2_range, title, path):
     plt.show()
 
 
+# Animation drawing function
+def animate_gradient_descent_3d(path, func, func_name, interval=100):
+    """
+    Draw the animation of the gradient descent
+    :param path: The path taken during the optimization
+    :param func: The function to be plotted
+    :param func_name: The name of the function
+    :param interval: The interval of the animation
+    """
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection="3d")
+
+    # Define the range of x1 and x2
+    x1_min, x1_max = np.min(path[:, 0]) - 5, np.max(path[:, 0]) + 5
+    x2_min, x2_max = np.min(path[:, 1]) - 5, np.max(path[:, 1]) + 5
+
+    # Create a meshgrid to draw surface
+    X1, X2 = np.meshgrid(
+        np.linspace(x1_min, x1_max, 100), np.linspace(x2_min, x2_max, 100)
+    )
+    x1_tensor = torch.tensor(X1, dtype=torch.float32)
+    x2_tensor = torch.tensor(X2, dtype=torch.float32)
+    with torch.no_grad():
+        Z_tensor = func(x1_tensor, x2_tensor)
+    Z = Z_tensor.numpy()
+
+    # Draw the surface
+    ax.plot_surface(X1, X2, Z, cmap="viridis", rstride=1, cstride=1, alpha=0.6)
+
+    # Initializes the animation element
+    (line,) = ax.plot([], [], [], color="r", marker="o", label="Gradient Descent Path")
+    (initial_point,) = ax.plot(
+        [], [], [], color="blue", marker="o", label="Initial Point"
+    )
+    txt = ax.text2D(0.05, 0.95, "", transform=ax.transAxes)
+
+    # Mark initial point
+    ax.scatter(
+        path[0, 0], path[0, 1], path[0, 2], color="blue", s=100, label="Initial Point"
+    )
+
+    # Set the label and title
+    ax.set_xlabel("x1")
+    ax.set_ylabel("x2")
+    ax.set_zlabel("f(x1, x2)")
+    ax.set_title(f"Gradient Descent 3D animation of {func_name}")
+    ax.legend()
+
+    def init():
+        line.set_data([], [])
+        line.set_3d_properties([])
+        initial_point.set_data([], [])
+        initial_point.set_3d_properties([])
+        txt.set_text("")
+        return line, initial_point, txt
+
+    def update(frame):
+        x1, x2, y = path[frame]
+        line.set_data(path[: frame + 1, 0], path[: frame + 1, 1])
+        line.set_3d_properties(path[: frame + 1, 2])
+        initial_point.set_data(path[0, 0], path[0, 1])
+        initial_point.set_3d_properties(path[0, 2])
+        txt.set_text(
+            f"Iteration: {frame}\nx1 = {x1:.4f}\nx2 = {x2:.4f}\nf(x1,x2) = {y:.4f}"
+        )
+        return line, initial_point, txt
+
+    # Create the animation
+    ani = FuncAnimation(
+        fig,
+        update,
+        frames=len(path),
+        init_func=init,
+        blit=False,
+        interval=interval,
+        repeat=False,
+    )
+
+    plt.show()
+
+
 # Define main function
 def main():
     # Define a dictionary of functions
