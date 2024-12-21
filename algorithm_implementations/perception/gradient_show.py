@@ -104,6 +104,11 @@ def styblinski_tang(x1, x2):
     """
     return 0.5 * (x1**4 - 16 * x1**2 + 5 * x1 + x2**4 - 16 * x2**2 + 5 * x2)
 
+def f(x, y):  
+    term1 = 1.5 * (1 - x)**2 * torch.exp(-0.5 * x**2 - (y + 2)**2)  
+    term2 = -2 * (x / 10 - x**3 / 2 - y**3) * torch.exp(-0.5 * (x**2 + y**2))  
+    term3 = -0.1 * torch.exp(-0.5 * (x + 2)**2 - 0.5 * y**2)  
+    return term1 + term2 + term3  
 
 # Using PyTorch to implement the gradient descent algorithm to find the function's minimum
 def gradient_descent_pytorch(func, learning_rate, tolerance, max_iters, start_point):
@@ -186,19 +191,19 @@ def plot_function(func, x1_range, x2_range, title, path):
         Z_tensor = func(X1_tensor, X2_tensor)
     Z = Z_tensor.numpy()
 
-    ax.plot_surface(X1, X2, Z, cmap="viridis", rstride=1, cstride=1, alpha=0.6)
+    ax.plot_surface(X1, X2, Z, cmap="magma", rstride=1, cstride=1, alpha=0.6)
 
     ax.plot(
         path[:, 0],
         path[:, 1],
         path[:, 2],
-        color="r",
+        color="b",
         marker="o",
         label="Gradient Descent Path",
     )
 
     ax.scatter(
-        path[0, 0], path[0, 1], path[0, 2], color="blue", s=100, label="Initial Point"
+        path[0, 0], path[0, 1], path[0, 2], color="yellow", s=100, label="Initial Point"
     )
     ax.scatter(
         path[-1, 0],
@@ -218,86 +223,76 @@ def plot_function(func, x1_range, x2_range, title, path):
 
     plt.show()
 
-
 # Animation drawing function
-def animate_gradient_descent_3d(path, func, func_name, interval=100):
-    """
-    Draw the animation of the gradient descent
+def animate_gradient_descent_3d(path, func, func_name, interval=100):  
+    """  
+    Draw the animation of the gradient descent in 3D
     :param path: The path taken during the optimization
     :param func: The function to be plotted
     :param func_name: The name of the function
     :param interval: The interval of the animation
-    """
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection="3d")
+    """  
+    fig = plt.figure(figsize=(10, 7))  
+    ax = fig.add_subplot(111, projection='3d')  
 
-    # Define the range of x1 and x2
-    x1_min, x1_max = np.min(path[:, 0]) - 5, np.max(path[:, 0]) + 5
-    x2_min, x2_max = np.min(path[:, 1]) - 5, np.max(path[:, 1]) + 5
+    # Set the range of the function
+    x1_min, x1_max = np.min(path[:,0]) - 2, np.max(path[:,0]) + 2  
+    x2_min, x2_max = np.min(path[:,1]) - 2, np.max(path[:,1]) + 2  
 
-    # Create a meshgrid to draw surface
-    X1, X2 = np.meshgrid(
-        np.linspace(x1_min, x1_max, 100), np.linspace(x2_min, x2_max, 100)
-    )
-    x1_tensor = torch.tensor(X1, dtype=torch.float32)
-    x2_tensor = torch.tensor(X2, dtype=torch.float32)
-    with torch.no_grad():
-        Z_tensor = func(x1_tensor, x2_tensor)
-    Z = Z_tensor.numpy()
+    # Create the meshgrid to plot the function surface
+    X1, X2 = np.meshgrid(np.linspace(x1_min, x1_max, 100), np.linspace(x2_min, x2_max, 100))  
+    X1_tensor = torch.tensor(X1, dtype=torch.float32)  
+    X2_tensor = torch.tensor(X2, dtype=torch.float32)  
+    with torch.no_grad():  
+        Z_tensor = func(X1_tensor, X2_tensor)  
+    Z = Z_tensor.numpy()  
 
-    # Draw the surface
-    ax.plot_surface(X1, X2, Z, cmap="viridis", rstride=1, cstride=1, alpha=0.6)
+    # Plot the surface
+    ax.plot_surface(X1, X2, Z, cmap='viridis', alpha=0.6)  
 
-    # Initializes the animation element
-    (line,) = ax.plot([], [], [], color="r", marker="o", label="Gradient Descent Path")
-    (initial_point,) = ax.plot(
-        [], [], [], color="blue", marker="o", label="Initial Point"
-    )
-    txt = ax.text2D(0.05, 0.95, "", transform=ax.transAxes)
+    # Initialize the path line and the current point
+    path_line, = ax.plot([], [], [], color='r', marker='o', label='Gradient Descent Path')  
+    current_point, = ax.plot([], [], [], 'ro', markersize=8)  
+    txt = ax.text2D(0.05, 0.95, "", transform=ax.transAxes)  
 
-    # Mark initial point
-    ax.scatter(
-        path[0, 0], path[0, 1], path[0, 2], color="blue", s=100, label="Initial Point"
-    )
+    # Mark the initial point and the minimum point
+    ax.scatter(path[0,0], path[0,1], path[0,2], color='blue', s=100, label='Initial Point')  
 
-    # Set the label and title
-    ax.set_xlabel("x1")
-    ax.set_ylabel("x2")
-    ax.set_zlabel("f(x1, x2)")
-    ax.set_title(f"Gradient Descent 3D animation of {func_name}")
-    ax.legend()
+    # Set title and labels
+    ax.set_xlabel('x1')  
+    ax.set_ylabel('x2')  
+    ax.set_zlabel('f(x1, x2)')  
+    ax.set_title(f'Gradient Descent on{func_name}）')  
+    ax.legend()  
 
-    def init():
-        line.set_data([], [])
-        line.set_3d_properties([])
-        initial_point.set_data([], [])
-        initial_point.set_3d_properties([])
-        txt.set_text("")
-        return line, initial_point, txt
+    def init():  
+        path_line.set_data([], [])  
+        path_line.set_3d_properties([])  
+        current_point.set_data([], [])  
+        current_point.set_3d_properties([])  
+        txt.set_text('')  
+        return path_line, current_point, txt  
 
-    def update(frame):
-        x1, x2, y = path[frame]
-        line.set_data(path[: frame + 1, 0], path[: frame + 1, 1])
-        line.set_3d_properties(path[: frame + 1, 2])
-        initial_point.set_data(path[0, 0], path[0, 1])
-        initial_point.set_3d_properties(path[0, 2])
-        txt.set_text(
-            f"Iteration: {frame}\nx1 = {x1:.4f}\nx2 = {x2:.4f}\nf(x1,x2) = {y:.4f}"
-        )
-        return line, initial_point, txt
+    def update(frame):  
+        x1, x2, y = path[frame]  
+        path_line.set_data(path[:frame+1, 0], path[:frame+1, 1])  
+        path_line.set_3d_properties(path[:frame+1, 2])  
+        current_point.set_data([x1], [x2])  
+        current_point.set_3d_properties([y])  
+        txt.set_text(f"迭代: {frame}\nx1 = {x1:.4f}\nx2 = {x2:.4f}\nf(x1,x2) = {y:.4f}")  
+        return path_line, current_point, txt  
 
-    # Create the animation
-    ani = FuncAnimation(
-        fig,
-        update,
-        frames=len(path),
-        init_func=init,
-        blit=False,
-        interval=interval,
-        repeat=False,
-    )
+    ani = FuncAnimation(  
+        fig,  
+        update,  
+        frames=len(path),  
+        init_func=init,  
+        blit=False,  
+        interval=interval,  
+        repeat=False  
+    )  
 
-    plt.show()
+    plt.show()  
 
 
 # Define main function
@@ -374,6 +369,13 @@ def main():
             "x2_range": [-10, 10],
             "start_point": [-7, 5],
         },
+        "11": {
+            "func": f,
+            "name": "f function",
+            "x1_range": [-5, 5],
+            "x2_range": [-5, 5],
+            "start_point": [-0.8, -2.3],
+        }
     }
 
     # Select function
@@ -388,7 +390,8 @@ def main():
     print("8. matyas function")
     print("9. easom function")
     print("10. styblinski-tang function")
-    choice = input("Enter your choice (1 ~ 10): ")
+    print("11. f function")
+    choice = input("Enter your choice (1 ~ 11): ")
     if choice not in functions:
         print("Invalid choice, please try again.")
         return
@@ -399,8 +402,6 @@ def main():
     tolerance = 1e-6
     max_iters = 1000
 
-    # print(functions[choice]["start_point"])
-
     # Reform gradient descent to obtain the path
     path = gradient_descent_pytorch(
         functions[choice]["func"],
@@ -410,6 +411,7 @@ def main():
         functions[choice]["start_point"],
     )
 
+    # Plot choice
     graph_choice = input("Do you want to plot the function graph? (y/n): ")
     if graph_choice.lower() == "y":
         # Plot function graph
@@ -424,6 +426,18 @@ def main():
         print("Skipping function graph plot.")
     else:
         print("Invalid choice.")
+
+    # Animation choice
+    animation_choice = input("Do you want to animate the gradient descent? (y/n): ")
+    if animation_choice.lower() == "y":
+        # Animate gradient descent
+        animate_gradient_descent_3d(
+            path,
+            functions[choice]["func"],
+            functions[choice]["name"],
+        )
+    elif animation_choice.lower() == "n":
+        print("Skipping gradient descent animation.")
 
 
 if __name__ == "__main__":
