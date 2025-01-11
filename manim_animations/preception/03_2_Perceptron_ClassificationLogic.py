@@ -21,10 +21,14 @@ class JudegeZ(Scene):
         label2 = Text("变色鸢尾", font=chinese_font).set_color(BLUE)
 
         # 组合第一个条件行
-        line1 = VGroup(condition1, arrow1, output1, arrow2, label1).arrange(RIGHT, buff=0.5)
+        line1 = VGroup(condition1, arrow1, output1, arrow2, label1).arrange(
+            RIGHT, buff=0.5
+        )
 
         # 组合第二个条件行
-        line2 = VGroup(condition2, arrow3, output2, arrow4, label2).arrange(RIGHT, buff=0.5)
+        line2 = VGroup(condition2, arrow3, output2, arrow4, label2).arrange(
+            RIGHT, buff=0.5
+        )
 
         # 将两行垂直排列，并指定对齐边缘为左侧
         lines = VGroup(line1, line2).arrange(DOWN, buff=1, aligned_edge=LEFT)
@@ -52,10 +56,7 @@ class fun_sign(Scene):
         self.wait(1)
 
         # 同时上移并缩小表达式
-        self.play(
-            expression.animate.scale(0.8).to_edge(UP),
-            run_time=2
-        )
+        self.play(expression.animate.scale(0.8).to_edge(UP), run_time=2)
         self.wait(1)
 
         # 创建坐标轴
@@ -96,7 +97,9 @@ class fun_sign(Scene):
         open_circle_neg.set_stroke(WHITE, width=2)
 
         # 将所有坐标系相关对象组合在一起
-        coord_group = VGroup(axes, axes_labels, graph, closed_circle, open_circle_pos, open_circle_neg)
+        coord_group = VGroup(
+            axes, axes_labels, graph, closed_circle, open_circle_pos, open_circle_neg
+        )
         coord_group.scale(0.6).move_to(DOWN)
 
         # 显示坐标轴和标签
@@ -111,7 +114,6 @@ class fun_sign(Scene):
             FadeIn(closed_circle),
             FadeIn(open_circle_pos),
             FadeIn(open_circle_neg),
-            run_time=1
+            run_time=1,
         )
         self.wait(3)
-

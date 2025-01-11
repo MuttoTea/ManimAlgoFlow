@@ -1,50 +1,57 @@
 from manim import *
-from SinglePerceptron import SinglePerceptron
-from SinglePerceptron import IrisDataProcessor
+from perceptron_models import SinglePerceptron
+from DataProcessor import IrisDataProcessor
 
 
 class LirsDataTitle(Scene):
     """
     数据集简介
     """
+
     def construct(self):
-    # 显示标题并设置字体大小和位置
-        title = Text('鸢尾花数据集', color=RED).scale(1.2)
+        # 显示标题并设置字体大小和位置
+        title = Text("鸢尾花数据集", color=RED).scale(1.2)
 
         # 加载图片
-        ImageSetosa = ImageMobject("C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\山鸢尾.jpg")
-        ImageVersicolor = ImageMobject('C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\变色鸢尾.jpeg')
-        ImageVirginica = ImageMobject("C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\维吉尼亚鸢尾png.png")
-        ImageP = ImageMobject("C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\罗纳德·费舍尔.jpg")
+        ImageSetosa = ImageMobject(
+            "C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\山鸢尾.jpg"
+        )
+        ImageVersicolor = ImageMobject(
+            "C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\变色鸢尾.jpeg"
+        )
+        ImageVirginica = ImageMobject(
+            "C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\维吉尼亚鸢尾png.png"
+        )
+        ImageP = ImageMobject(
+            "C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\罗纳德·费舍尔.jpg"
+        )
 
         # 创建文本标签
         TextSetosa = Paragraph(
-            '山鸢尾',
-            "(Iris Setosa)",
-            color=BLUE,
-            alignment="center",
-            font_size=20
+            "山鸢尾", "(Iris Setosa)", color=BLUE, alignment="center", font_size=20
         )
         TextVersicolor = Paragraph(
-            '变色鸢尾',
+            "变色鸢尾",
             "(Iris Versicolor)",
             color=BLUE,
             alignment="center",
-            font_size=20
+            font_size=20,
         )
         TextVirginica = Paragraph(
             "维吉尼亚鸢尾",
             "(Iris Virginica)",
             color=BLUE,
             alignment="center",
-            font_size=20
+            font_size=20,
         )
-        TextP_title = Text("罗纳德·费舍尔", color=YELLOW, font_size=20)  
-        TextP_date = MathTex("1890-1962", color=YELLOW).scale(0.7)  
+        TextP_title = Text("罗纳德·费舍尔", color=YELLOW, font_size=20)
+        TextP_date = MathTex("1890-1962", color=YELLOW).scale(0.7)
 
-        # 组合成一个组，并垂直排列  
-        TextP = VGroup(TextP_title, TextP_date).arrange(DOWN, buff=0.2).set_color(YELLOW)  
-        
+        # 组合成一个组，并垂直排列
+        TextP = (
+            VGroup(TextP_title, TextP_date).arrange(DOWN, buff=0.2).set_color(YELLOW)
+        )
+
         # 调整图片大小
         target_height = 2  # 目标高度
         ImageSetosa.height = target_height
@@ -54,7 +61,9 @@ class LirsDataTitle(Scene):
 
         # 创建图片与文本的组合
         setosa_group = Group(ImageSetosa, TextSetosa).arrange(DOWN, buff=0.2)
-        versicolor_group = Group(ImageVersicolor, TextVersicolor).arrange(DOWN, buff=0.2)
+        versicolor_group = Group(ImageVersicolor, TextVersicolor).arrange(
+            DOWN, buff=0.2
+        )
         virginica_group = Group(ImageVirginica, TextVirginica).arrange(DOWN, buff=0.2)
         P_group = Group(ImageP, TextP).arrange(DOWN, buff=0.2)
 
@@ -73,13 +82,15 @@ class LirsDataTitle(Scene):
         full_group = Group(title, setosa_group, versicolor_group, virginica_group)
 
         # 添加图片和文本到场景
-        self.play(FadeIn(setosa_group), FadeIn(versicolor_group), FadeIn(virginica_group), run_time=1)
+        self.play(
+            FadeIn(setosa_group),
+            FadeIn(versicolor_group),
+            FadeIn(virginica_group),
+            run_time=1,
+        )
         self.wait(0.5)
         # 缩小并左移
-        self.play(
-            full_group.animate.scale(0.8).shift(LEFT * 2),
-            run_time=1
-        )
+        self.play(full_group.animate.scale(0.8).shift(LEFT * 2), run_time=1)
 
         # 将 P_group 的中轴线与 full_group 对齐
         P_group.align_to(full_group, UP)
@@ -90,14 +101,15 @@ class LirsDataTitle(Scene):
         self.play(FadeOut(Group(title, full_group, P_group)))
         self.wait(1)
 
-        
+
 class FeatureSelcet(Scene):
     """
     数据选择
     """
+
     def construct(self):
         # 创建文本对象
-        title1 = Text('特征', color=RED).scale(1.2)
+        title1 = Text("特征", color=RED).scale(1.2)
         title2 = Text("分类对象", color=RED).scale(1.2)
         feature_l = Text("长", color=WHITE)
         feature_w = Text("宽", color=WHITE)
@@ -128,6 +140,7 @@ class LirdDataVisual(Scene):
     """
     数据可视化
     """
+
     def construct(self):
         # 数据处理
         data_processor = IrisDataProcessor()
@@ -152,10 +165,7 @@ class LirdDataVisual(Scene):
         axes = Axes(
             x_range=[4, 7.5, 0.5],  # x轴范围
             y_range=[1, 5, 1],  # y轴范围
-            axis_config={
-                "color": BLUE,
-                "include_numbers": True
-            },
+            axis_config={"color": BLUE, "include_numbers": True},
         )
 
         # 添加标签
@@ -177,7 +187,9 @@ class LirdDataVisual(Scene):
 
         # 创建散点
         setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]
-        versicolor_dots = [Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points]
+        versicolor_dots = [
+            Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points
+        ]
 
         # 创建点的组合
         dots_group = VGroup(*setosa_dots, *versicolor_dots)
@@ -186,31 +198,49 @@ class LirdDataVisual(Scene):
         self.play(*[Create(dot) for dot in setosa_dots + versicolor_dots])
 
         # 绘制超平面
-        hyperplane = axes.plot(lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7])
+        hyperplane = axes.plot(
+            lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7]
+        )
 
         # 添加超平面到场景
         self.play(Create(hyperplane))
 
         # 添加文字“如何求这条直线？”
-        annotation_text = Text("如何求这条直线？", font_size=24).next_to(hyperplane, UP, buff=0.5).shift(RIGHT * 1.5)
+        annotation_text = (
+            Text("如何求这条直线？", font_size=24)
+            .next_to(hyperplane, UP, buff=0.5)
+            .shift(RIGHT * 1.5)
+        )
 
         # 创建曲线箭头指向超平面上x为6.75的点
         x_target = 6.75
         y_target = slope * x_target + intercept
         end_point = axes.c2p(x_target, y_target)
         arrow = CurvedArrow(
-            annotation_text.get_center()+[1.3, 0, 0],
+            annotation_text.get_center() + [1.3, 0, 0],
             end_point,
             angle=-TAU / 8,
             color=YELLOW,
             stroke_width=4,
-            tip_length=0.3
+            tip_length=0.3,
         )
         self.play(Write(annotation_text), Create(arrow))
 
         # 等待
         self.wait(1)
-        self.play(FadeOut(Group(annotation_text, arrow, axes, x_label, y_label, hyperplane, dots_group)))
+        self.play(
+            FadeOut(
+                Group(
+                    annotation_text,
+                    arrow,
+                    axes,
+                    x_label,
+                    y_label,
+                    hyperplane,
+                    dots_group,
+                )
+            )
+        )
         self.wait(1)
 
 
@@ -240,10 +270,7 @@ class CoordinateSystem(Scene):
         axes = Axes(
             x_range=[4, 7.5, 0.5],  # x轴范围
             y_range=[1, 5, 1],  # y轴范围
-            axis_config={
-                "color": BLUE,
-                "include_numbers": True
-            },
+            axis_config={"color": BLUE, "include_numbers": True},
         )
 
         # 添加标签
@@ -265,7 +292,9 @@ class CoordinateSystem(Scene):
 
         # 创建散点
         setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]
-        versicolor_dots = [Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points]
+        versicolor_dots = [
+            Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points
+        ]
 
         # 创建点的组合
         dots_group = VGroup(*setosa_dots, *versicolor_dots)
@@ -274,29 +303,47 @@ class CoordinateSystem(Scene):
         self.play(*[Create(dot) for dot in setosa_dots + versicolor_dots])
 
         # 绘制超平面
-        hyperplane = axes.plot(lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7])
+        hyperplane = axes.plot(
+            lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7]
+        )
 
         # 添加超平面到场景
         self.play(Create(hyperplane))
 
         # 添加文字“如何求这条直线？”
-        annotation_text = Text("如何求这条直线？", font_size=24).next_to(hyperplane, UP, buff=0.5).shift(RIGHT * 1.5)
+        annotation_text = (
+            Text("如何求这条直线？", font_size=24)
+            .next_to(hyperplane, UP, buff=0.5)
+            .shift(RIGHT * 1.5)
+        )
 
         # 创建曲线箭头指向超平面上x为6.75的点
         x_target = 6.75
         y_target = slope * x_target + intercept
         end_point = axes.c2p(x_target, y_target)
         arrow = CurvedArrow(
-            annotation_text.get_center()+[1.3, 0, 0],
+            annotation_text.get_center() + [1.3, 0, 0],
             end_point,
             angle=-TAU / 8,
             color=YELLOW,
             stroke_width=4,
-            tip_length=0.3
+            tip_length=0.3,
         )
         self.play(Write(annotation_text), Create(arrow))
 
         # 等待
         self.wait(1)
-        self.play(FadeOut(Group(annotation_text, arrow, axes, x_label, y_label, hyperplane, dots_group)))
+        self.play(
+            FadeOut(
+                Group(
+                    annotation_text,
+                    arrow,
+                    axes,
+                    x_label,
+                    y_label,
+                    hyperplane,
+                    dots_group,
+                )
+            )
+        )
         self.wait(1)

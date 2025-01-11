@@ -1,17 +1,20 @@
 from manim import *
 
+
 class NetInput(Scene):
     def construct(self):
         # 创建文本和数学公式对象
-        sepal_length_text = Text('花萼长度', color=RED)
-        sepal_width_text = Text('花萼宽度', color=RED)
-        sepal_length_var = MathTex('x_{1}', color=YELLOW)
-        sepal_width_var = MathTex('x_{2}', color=YELLOW)
-        weight1_var = MathTex('w_{1}', color=GREEN)
-        weight2_var = MathTex('w_{2}', color=GREEN)
+        sepal_length_text = Text("花萼长度", color=RED)
+        sepal_width_text = Text("花萼宽度", color=RED)
+        sepal_length_var = MathTex("x_{1}", color=YELLOW)
+        sepal_width_var = MathTex("x_{2}", color=YELLOW)
+        weight1_var = MathTex("w_{1}", color=GREEN)
+        weight2_var = MathTex("w_{2}", color=GREEN)
 
         # 创建每一列的VGroup并垂直排列
-        label_column = VGroup(sepal_length_text, sepal_width_text).arrange(DOWN, buff=0.5)
+        label_column = VGroup(sepal_length_text, sepal_width_text).arrange(
+            DOWN, buff=0.5
+        )
         x_column = VGroup(sepal_length_var, sepal_width_var).arrange(DOWN, buff=0.5)
         w_column = VGroup(weight1_var, weight2_var).arrange(DOWN, buff=0.5)
 
@@ -25,7 +28,7 @@ class NetInput(Scene):
         animations = [
             AnimationGroup(Write(label_column), lag_ratio=0),
             AnimationGroup(Write(x_column), lag_ratio=0),
-            AnimationGroup(Write(w_column), lag_ratio=0)
+            AnimationGroup(Write(w_column), lag_ratio=0),
         ]
 
         # 使用 LaggedStart 来控制每列之间的时间间隔
@@ -48,7 +51,7 @@ class NetInput(Scene):
         # 4. 将 w_column 中的每个权重变量移动到对应乘号的右侧
         self.play(
             weight1_var.animate.next_to(multiply1, RIGHT, buff=0.2),
-            weight2_var.animate.next_to(multiply2, RIGHT, buff=0.2)
+            weight2_var.animate.next_to(multiply2, RIGHT, buff=0.2),
         )
 
         # 5. 显示乘号
@@ -86,7 +89,7 @@ class NetInput(Scene):
         self.play(
             term1.animate.next_to(term2, LEFT, buff=0.7),
             equals.animate.move_to(equals.get_center()),  # 保持原位
-            z.animate.next_to(equals, LEFT, buff=0.5)
+            z.animate.next_to(equals, LEFT, buff=0.5),
         )
         self.wait(0.5)
 
@@ -104,6 +107,3 @@ class NetInput(Scene):
         self.wait(1)
         self.play(FadeOut(Group(term1, term2, plus, equals, z, second_plus, b)))
         self.wait(1)
-
-
-

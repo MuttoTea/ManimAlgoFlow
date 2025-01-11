@@ -1,5 +1,6 @@
 from manim import *
-from SinglePerceptron import IrisDataProcessor
+from DataProcessor import IrisDataProcessor
+
 
 class PerceptronFindWeights(Scene):
     def construct(self):
@@ -18,30 +19,22 @@ class PerceptronFindWeights(Scene):
         axes = Axes(
             x_range=[4, 7.5, 0.5],  # x轴范围
             y_range=[1, 5, 1],  # y轴范围
-            axis_config={
-                "color": BLUE,
-                "include_numbers": True
-            },
+            axis_config={"color": BLUE, "include_numbers": True},
         )
 
         # 定义变量及其对应的数值
-        replacements = {
-            "w_1": "-0.4",
-            "w_2": "0.9",
-            "b": "-0.3"
-        }
+        replacements = {"w_1": "-0.4", "w_2": "0.9", "b": "-0.3"}
 
         # 创建初始数学公式，并孤立需要替换的变量
         equation = MathTex(
             r"w_1 \times x_1 + w_2 \times x_2 + b = 0",
             font_size=46,
-            substrings_to_isolate=["w_1", "x_1", "w_2", "x_2", "+ b", "0"]
+            substrings_to_isolate=["w_1", "x_1", "w_2", "x_2", "+ b", "0"],
         ).to_edge(UP)
 
         # 创建替换后的方程
         equation_with_values = MathTex(
-            r"-0.4 \times x_1 + 0.9 \times x_2 - 0.3 = 0",
-            font_size=42
+            r"-0.4 \times x_1 + 0.9 \times x_2 - 0.3 = 0", font_size=42
         ).to_edge(UP)
 
         self.add(equation)
@@ -63,13 +56,19 @@ class PerceptronFindWeights(Scene):
 
         # 创建散点
         setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]
-        versicolor_dots = [Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points]
+        versicolor_dots = [
+            Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points
+        ]
 
         # 绘制超平面
-        hyperplane = axes.plot(lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7])
+        hyperplane = axes.plot(
+            lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7]
+        )
 
         # 创建一个 VGroup，包括轴、标签、散点和直线
-        group = VGroup(axes, x_label, y_label, *setosa_dots, *versicolor_dots, hyperplane)
+        group = VGroup(
+            axes, x_label, y_label, *setosa_dots, *versicolor_dots, hyperplane
+        )
 
         # 对整个坐标系集合进行缩放
         group.scale(0.8)
@@ -99,7 +98,7 @@ class PerceptronFindWeights(Scene):
             # elif var == "+ b":
             #     value_tex.shift(LEFT * 0.2, UP * 0.1)
 
-                # 使用 ReplacementTransform 进行替换动画
+            # 使用 ReplacementTransform 进行替换动画
             self.play(ReplacementTransform(var_obj, value_tex))
 
         self.wait(2)
@@ -114,15 +113,21 @@ class PerceptronFindWeights(Scene):
 
         # 创建 Dot 和 Label for Setosa
         setosa_dot = Dot(axes.c2p(*setosa_selected), color=BLUE)
-        setosa_label = MathTex(r"(5, 3.6)", font_size=24).next_to(setosa_dot, UP + RIGHT)
+        setosa_label = MathTex(r"(5, 3.6)", font_size=24).next_to(
+            setosa_dot, UP + RIGHT
+        )
 
         # 创建 Dot 和 Label for Versicolor 1
         versicolor_dot_1 = Dot(axes.c2p(*versicolor_selected_1), color=ORANGE)
-        versicolor_label_1 = MathTex(r"(6, 2.2)", font_size=24).next_to(versicolor_dot_1, UP + RIGHT)
+        versicolor_label_1 = MathTex(r"(6, 2.2)", font_size=24).next_to(
+            versicolor_dot_1, UP + RIGHT
+        )
 
         # 创建 Dot 和 Label for Versicolor 2
         versicolor_dot_2 = Dot(axes.c2p(*versicolor_selected_2), color=ORANGE)
-        versicolor_label_2 = MathTex(r"(5.9, 3.2)", font_size=24).next_to(versicolor_dot_2, UP + RIGHT)
+        versicolor_label_2 = MathTex(r"(5.9, 3.2)", font_size=24).next_to(
+            versicolor_dot_2, UP + RIGHT
+        )
 
         # 创建 VGroups
         all_dots = VGroup(*setosa_dots, *versicolor_dots)
@@ -146,7 +151,9 @@ class PerceptronFindWeights(Scene):
         labels = VGroup(setosa_label, versicolor_label_1, versicolor_label_2)
 
         # 定义移动目标位置
-        top_right_point_target = setosa_dot.copy().to_edge(UP + RIGHT).shift(LEFT * 4 + DOWN * 2)
+        top_right_point_target = (
+            setosa_dot.copy().to_edge(UP + RIGHT).shift(LEFT * 4 + DOWN * 2)
+        )
         spacing = 1.5
 
         # 创建目标位置列表
@@ -171,33 +178,47 @@ class PerceptronFindWeights(Scene):
         second_numbers = ["3.6", "2.2", "3.2"]
 
         # 创建新的分离标签（第一组数字）
-        setosa_label_number = MathTex(first_numbers[0], font_size=36).next_to(setosa_dot, LEFT * 21)
-        versicolor_label_number_1 = MathTex(first_numbers[1], font_size=36).next_to(versicolor_dot_1, LEFT * 21)
-        versicolor_label_number_2 = MathTex(first_numbers[2], font_size=36).next_to(versicolor_dot_2, LEFT * 21)
-        number_labels_replace = VGroup(setosa_label_number, versicolor_label_number_1, versicolor_label_number_2)
+        setosa_label_number = MathTex(first_numbers[0], font_size=36).next_to(
+            setosa_dot, LEFT * 21
+        )
+        versicolor_label_number_1 = MathTex(first_numbers[1], font_size=36).next_to(
+            versicolor_dot_1, LEFT * 21
+        )
+        versicolor_label_number_2 = MathTex(first_numbers[2], font_size=36).next_to(
+            versicolor_dot_2, LEFT * 21
+        )
+        number_labels_replace = VGroup(
+            setosa_label_number, versicolor_label_number_1, versicolor_label_number_2
+        )
 
         # 创建新的分离标签（第二组数字）
-        setosa_label_decimal = MathTex(second_numbers[0], font_size=36).next_to(setosa_label_number, RIGHT)
-        versicolor_label_decimal_1 = MathTex(second_numbers[1], font_size=36).next_to(versicolor_label_number_1,
-                                                                                      RIGHT)
-        versicolor_label_decimal_2 = MathTex(second_numbers[2], font_size=36).next_to(versicolor_label_number_2,
-                                                                                      RIGHT)
-        decimal_labels_replace = VGroup(setosa_label_decimal, versicolor_label_decimal_1, versicolor_label_decimal_2)
+        setosa_label_decimal = MathTex(second_numbers[0], font_size=36).next_to(
+            setosa_label_number, RIGHT
+        )
+        versicolor_label_decimal_1 = MathTex(second_numbers[1], font_size=36).next_to(
+            versicolor_label_number_1, RIGHT
+        )
+        versicolor_label_decimal_2 = MathTex(second_numbers[2], font_size=36).next_to(
+            versicolor_label_number_2, RIGHT
+        )
+        decimal_labels_replace = VGroup(
+            setosa_label_decimal, versicolor_label_decimal_1, versicolor_label_decimal_2
+        )
 
         # 将分离后的标签组合
-        labels_replace = VGroup(
-            number_labels_replace,
-            decimal_labels_replace
-        )
+        labels_replace = VGroup(number_labels_replace, decimal_labels_replace)
 
         # 播放标签替换动画
         replace_animations = []
-        for original_label, (new_number, new_decimal) in zip(labels,
-                                                             zip(number_labels_replace, decimal_labels_replace)):
+        for original_label, (new_number, new_decimal) in zip(
+            labels, zip(number_labels_replace, decimal_labels_replace)
+        ):
             # 替换第一组数字
             replace_animations.append(ReplacementTransform(original_label, new_number))
             # 添加第二组数字
-            replace_animations.append(ReplacementTransform(original_label.copy(), new_decimal))
+            replace_animations.append(
+                ReplacementTransform(original_label.copy(), new_decimal)
+            )
 
         # 播放动画
         self.play(*replace_animations)
@@ -212,28 +233,33 @@ class PerceptronFindWeights(Scene):
         self.play(decimal_labels_replace.animate.shift(RIGHT * 1.1))
 
         # 创建第一列的乘数和乘号
-        multiplier1_group = VGroup(*[
-            VGroup(
-                MathTex(multiplier1[i], font_size=36),  # 乘数
-                MathTex(r"\times")  # 乘号
-            ).arrange(RIGHT, buff=0.1).next_to(number_labels_replace[i], LEFT * 0.45)
-            for i in range(len(number_labels_replace))
-        ])
+        multiplier1_group = VGroup(
+            *[
+                VGroup(
+                    MathTex(multiplier1[i], font_size=36),  # 乘数
+                    MathTex(r"\times"),  # 乘号
+                )
+                .arrange(RIGHT, buff=0.1)
+                .next_to(number_labels_replace[i], LEFT * 0.45)
+                for i in range(len(number_labels_replace))
+            ]
+        )
 
         # 创建第二列的乘数和乘号
-        multiplier2_group = VGroup(*[
-            VGroup(
-                MathTex(multiplier2[i], font_size=36),  # 乘数
-                MathTex(r"\times")  # 乘号
-            ).arrange(RIGHT, buff=0.1).next_to(decimal_labels_replace[i], LEFT * 0.45)
-            for i in range(len(decimal_labels_replace))
-        ])
+        multiplier2_group = VGroup(
+            *[
+                VGroup(
+                    MathTex(multiplier2[i], font_size=36),  # 乘数
+                    MathTex(r"\times"),  # 乘号
+                )
+                .arrange(RIGHT, buff=0.1)
+                .next_to(decimal_labels_replace[i], LEFT * 0.45)
+                for i in range(len(decimal_labels_replace))
+            ]
+        )
 
         # 动画同时显示所有乘数和乘号
-        self.play(
-            FadeIn(multiplier1_group),
-            FadeIn(multiplier2_group)
-        )
+        self.play(FadeIn(multiplier1_group), FadeIn(multiplier2_group))
         # self.wait(1)
 
         # 创建加号，并逐行对齐
@@ -242,7 +268,9 @@ class PerceptronFindWeights(Scene):
             # 创建加号
             plus = MathTex("+").scale(0.9)
             # 将加号放置在两列之间，并与对应的行对齐
-            plus.next_to(number_labels_replace[i], RIGHT, buff=0.1).align_to(number_labels_replace[i], DOWN)
+            plus.next_to(number_labels_replace[i], RIGHT, buff=0.1).align_to(
+                number_labels_replace[i], DOWN
+            )
             plus_signs.add(plus)
 
             # 添加加号动画
@@ -254,7 +282,9 @@ class PerceptronFindWeights(Scene):
             # 创建 "+ 0.3"
             plus_bias = MathTex(f"- {bias[i]}", font_size=36)
             # 将偏置项放置在加号的右侧，并与对应的行对齐
-            plus_bias.next_to(decimal_labels_replace[i], RIGHT, buff=0.1).align_to(decimal_labels_replace[i], DOWN)
+            plus_bias.next_to(decimal_labels_replace[i], RIGHT, buff=0.1).align_to(
+                decimal_labels_replace[i], DOWN
+            )
             bias_group.add(plus_bias)
 
             # 添加偏置项的动画
@@ -268,17 +298,23 @@ class PerceptronFindWeights(Scene):
         print(results)
 
         # 创建等号组
-        equals_group = VGroup(*[
-            MathTex("=", font_size=36).next_to(bias_group[i], RIGHT, buff=0.1).align_to(bias_group[i], DOWN)
-            for i in range(len(results))
-        ])
+        equals_group = VGroup(
+            *[
+                MathTex("=", font_size=36)
+                .next_to(bias_group[i], RIGHT, buff=0.1)
+                .align_to(bias_group[i], DOWN)
+                for i in range(len(results))
+            ]
+        )
 
         # 创建一个空的组来存放数字（包括负号和数字）
         numbers_group = VGroup()
 
         # 识别负数并去掉负号
         is_negative = [num.startswith("-") for num in results]
-        stripped_numbers = [num[1:] if neg else num for num, neg in zip(results, is_negative)]
+        stripped_numbers = [
+            num[1:] if neg else num for num, neg in zip(results, is_negative)
+        ]
 
         for eq, num, neg in zip(equals_group, stripped_numbers, is_negative):
             # 创建数字对象
@@ -311,18 +347,19 @@ class PerceptronFindWeights(Scene):
 
         # 动画同时显示等号和结果
 
-        self.play(
-            FadeIn(equals_group),
-            FadeIn(numbers_group)
-        )
+        self.play(FadeIn(equals_group), FadeIn(numbers_group))
         # self.wait(1)
 
-        multiply_signs = VGroup(*[
-            MathTex(r"\times", font_size=36).next_to(numbers_group[i], RIGHT, buff=0.4)
-            for i in range(len(numbers_group))
-        ])
+        multiply_signs = VGroup(
+            *[
+                MathTex(r"\times", font_size=36).next_to(
+                    numbers_group[i], RIGHT, buff=0.4
+                )
+                for i in range(len(numbers_group))
+            ]
+        )
 
-        numbers = ['1', '-1', '-1']
+        numbers = ["1", "-1", "-1"]
         # 创建数字组，初始时位置与等号相同，但不可见
         number_replacements = VGroup()
 
@@ -332,7 +369,9 @@ class PerceptronFindWeights(Scene):
             stripped_number = result[1:] if is_negative else result
 
             # 创建数字对象，颜色根据正负决定
-            number = MathTex(stripped_number, font_size=36, color=BLUE if not is_negative else ORANGE)
+            number = MathTex(
+                stripped_number, font_size=36, color=BLUE if not is_negative else ORANGE
+            )
 
             if is_negative:
                 # 如果是负数，创建负号对象
@@ -347,7 +386,9 @@ class PerceptronFindWeights(Scene):
             number_replacements.add(combined_number)
 
             # 将数字组垂直排列，与等号组对齐
-        number_replacements.arrange(DOWN, buff=1.5).next_to(multiply_signs, RIGHT, buff=0.3)
+        number_replacements.arrange(DOWN, buff=1.5).next_to(
+            multiply_signs, RIGHT, buff=0.3
+        )
 
         # 调整数字组的位置，使其与等号组在垂直方向上对齐
         for eq, num in zip(multiply_signs, number_replacements):
@@ -363,8 +404,16 @@ class PerceptronFindWeights(Scene):
 
         # 继续后续动画处理
         self.play(
-            FadeOut(number_labels_replace, decimal_labels_replace, multiplier1_group, multiplier2_group, plus_signs,
-                    bias_group, equals_group))
+            FadeOut(
+                number_labels_replace,
+                decimal_labels_replace,
+                multiplier1_group,
+                multiplier2_group,
+                plus_signs,
+                bias_group,
+                equals_group,
+            )
+        )
         self.play(number_replacements.animate)
         self.play(FadeIn(multiply_signs))
 
@@ -375,22 +424,32 @@ class PerceptronFindWeights(Scene):
         # 创建符号标签
         sign_labels = VGroup()
         for i in range(len(number_replacements)):
-            sign_label = MathTex(signs[i], font_size=36).next_to(number_replacements[i], RIGHT, buff=0.4)
+            sign_label = MathTex(signs[i], font_size=36).next_to(
+                number_replacements[i], RIGHT, buff=0.4
+            )
             sign_labels.add(sign_label)
 
             # 动画显示符号标签
         self.play(FadeIn(sign_labels))
         self.wait(1)
 
-        text1 = Text('分类正确', font_size=36, color=GREEN).next_to(numbers_group[0], LEFT)
-        text2 = Text('分类错误', font_size=36, color=RED).next_to(numbers_group[2], LEFT)
-        text3 = Text('分类正确', font_size=36, color=GREEN).next_to(numbers_group[1], LEFT)
+        text1 = Text("分类正确", font_size=36, color=GREEN).next_to(
+            numbers_group[0], LEFT
+        )
+        text2 = Text("分类错误", font_size=36, color=RED).next_to(
+            numbers_group[2], LEFT
+        )
+        text3 = Text("分类正确", font_size=36, color=GREEN).next_to(
+            numbers_group[1], LEFT
+        )
         TextGroup = VGroup(text1, text2, text3)
         self.play(FadeIn(TextGroup))
         self.wait(1)
 
         # 找到需要操作的元素
-        greater_than_zero = [text for text in sign_labels if text.get_tex_string() == ">0"]
+        greater_than_zero = [
+            text for text in sign_labels if text.get_tex_string() == ">0"
+        ]
         less_than_zero = [text for text in sign_labels if text.get_tex_string() == "<0"]
 
         # 定义一个函数来应用高亮、放大和旋转晃动效果
@@ -405,14 +464,24 @@ class PerceptronFindWeights(Scene):
             self.wait(0.1)
 
             # 旋转晃动
-            shake_angles = [15 * DEGREES, -15 * DEGREES, 15 * DEGREES, -15 * DEGREES, 15 * DEGREES, -15 * DEGREES, 0]
+            shake_angles = [
+                15 * DEGREES,
+                -15 * DEGREES,
+                15 * DEGREES,
+                -15 * DEGREES,
+                15 * DEGREES,
+                -15 * DEGREES,
+                0,
+            ]
             for angle in shake_angles:
                 shake_animations = [text.animate.rotate(angle) for text in texts]
                 self.play(*shake_animations, run_time=0.05)
             self.wait(0.3)
 
             # 恢复到默认外观
-            restore_animations = [text.animate.scale(1 / 1.5).set_color(WHITE) for text in texts]
+            restore_animations = [
+                text.animate.scale(1 / 1.5).set_color(WHITE) for text in texts
+            ]
             self.play(*restore_animations, run_time=0.5)
             self.wait(0.5)
 
@@ -424,13 +493,19 @@ class PerceptronFindWeights(Scene):
         animate_texts(less_than_zero)
 
         replacement_numbers = [
-            MathTex('0'),
-            MathTex('0'),
-            MathTex('-0.81')  # 如果需要数学公式格式，可以使用 MathTex
+            MathTex("0"),
+            MathTex("0"),
+            MathTex("-0.81"),  # 如果需要数学公式格式，可以使用 MathTex
         ]
-        Group1 = VGroup(numbers_group[0], number_replacements[0], multiply_signs[0], sign_labels[0])
-        Group2 = VGroup(numbers_group[1], number_replacements[1], multiply_signs[1], sign_labels[1])
-        Group3 = VGroup(numbers_group[2], number_replacements[2], multiply_signs[2], sign_labels[2])
+        Group1 = VGroup(
+            numbers_group[0], number_replacements[0], multiply_signs[0], sign_labels[0]
+        )
+        Group2 = VGroup(
+            numbers_group[1], number_replacements[1], multiply_signs[1], sign_labels[1]
+        )
+        Group3 = VGroup(
+            numbers_group[2], number_replacements[2], multiply_signs[2], sign_labels[2]
+        )
 
         # 将 replacement_numbers 移动到 Group1 和 Group2 的中心位置
         replacement_numbers[0].move_to(Group1.get_center() - RIGHT)
@@ -440,11 +515,10 @@ class PerceptronFindWeights(Scene):
         self.play(
             ReplacementTransform(Group1, replacement_numbers[0]),
             ReplacementTransform(Group2, replacement_numbers[1]),
-            run_time=1)
+            run_time=1,
+        )
         self.wait(0.5)
         self.play(ReplacementTransform(Group3, replacement_numbers[2]))
 
         text1 = Text("损失/代价").next_to(replacement_numbers[2], RIGHT)
         self.play(Write(text1))
-
-

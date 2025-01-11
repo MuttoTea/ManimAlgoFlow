@@ -3,10 +3,10 @@ from manim import *
 
 class Prologue(Scene):
     def construct(self):
-        text1 = Text('数据分类', color=RED)
-        text2 = Text('字迹识别', color=YELLOW)
-        text3 = Text('肿瘤识别', color=BLUE)
-        text4 = Text('......', color=ORANGE)
+        text1 = Text("数据分类", color=RED)
+        text2 = Text("字迹识别", color=YELLOW)
+        text3 = Text("肿瘤识别", color=BLUE)
+        text4 = Text("......", color=ORANGE)
 
         self.play(Write(text1), runtime=1.5)
         self.play(text1.animate.shift(UP * 2))
@@ -24,7 +24,6 @@ class Prologue(Scene):
         self.wait(1)
         self.play(FadeOut(Group(text1, text2, text3, text4)))
         self.wait(1)
-
 
 
 # if __name__ == "__main__":

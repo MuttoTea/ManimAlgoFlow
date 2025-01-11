@@ -29,8 +29,12 @@ class UnivariateQuadratic(Scene):
         self.play(FadeOut(question))
 
         # 方法一：通过求导的方式找到极值/最值并求出此时的变量
-        derivative = MathTex(r'\frac{\mathrm{d} y}{\mathrm{d} x} ').to_edge(RIGHT, buff=2).shift(UP * 0.5)
-        equal_zero = MathTex(r'= 0').next_to(derivative, RIGHT, buff=0.15)
+        derivative = (
+            MathTex(r"\frac{\mathrm{d} y}{\mathrm{d} x} ")
+            .to_edge(RIGHT, buff=2)
+            .shift(UP * 0.5)
+        )
+        equal_zero = MathTex(r"= 0").next_to(derivative, RIGHT, buff=0.15)
 
         # 显示导数
         self.play(FadeIn(derivative))
@@ -50,7 +54,7 @@ class UnivariateQuadratic(Scene):
         self.play(FadeIn(dot))
 
         # 添加点标签
-        point_label = MathTex(r'x_{min}').next_to(dot, DR, buff=0.3)
+        point_label = MathTex(r"x_{min}").next_to(dot, DR, buff=0.3)
         self.play(Write(point_label))
         self.wait(1)
 
@@ -58,12 +62,12 @@ class UnivariateQuadratic(Scene):
         vertical_line = DashedLine(
             start=axes.coords_to_point(x_min, 0),
             end=axes.coords_to_point(x_min, y_min),
-            color=GREY
+            color=GREY,
         )
         horizontal_line = DashedLine(
             start=axes.coords_to_point(0, y_min),
             end=axes.coords_to_point(x_min, y_min),
-            color=GREY
+            color=GREY,
         )
         self.play(Create(vertical_line), Create(horizontal_line))
         self.wait(2)
@@ -71,10 +75,14 @@ class UnivariateQuadratic(Scene):
         # 最终展示
         self.wait(2)
 
-        formular1 = MathTex(
-            r"L = \max(0, -y(w \cdot x + b))",
-            substrings_to_isolate=["L", "=", r"\max", "w", "x", "b"]
-        ).scale(0.8).to_edge(UP)
+        formular1 = (
+            MathTex(
+                r"L = \max(0, -y(w \cdot x + b))",
+                substrings_to_isolate=["L", "=", r"\max", "w", "x", "b"],
+            )
+            .scale(0.8)
+            .to_edge(UP)
+        )
 
         # # 打印公式中每个部分的索引
         # for i, part in enumerate(formular1):
@@ -86,21 +94,33 @@ class UnivariateQuadratic(Scene):
 
         self.play(Write(formular1))
         self.wait(0.5)
-        self.play(part1.animate.set_color(RED), part2.animate.set_color(RED), part3.animate.set_color((RED)))
-        self.play(FadeOut(formular1), FadeOut(vertical_line), FadeOut(horizontal_line),
-                  FadeOut(dot), FadeOut(axes), FadeOut(graph), FadeOut(point_label),
-                  FadeOut(derivative), FadeOut(equal_zero))
-        
-    
+        self.play(
+            part1.animate.set_color(RED),
+            part2.animate.set_color(RED),
+            part3.animate.set_color((RED)),
+        )
+        self.play(
+            FadeOut(formular1),
+            FadeOut(vertical_line),
+            FadeOut(horizontal_line),
+            FadeOut(dot),
+            FadeOut(axes),
+            FadeOut(graph),
+            FadeOut(point_label),
+            FadeOut(derivative),
+            FadeOut(equal_zero),
+        )
+
+
 class QuadraticSurfaceVisualization(ThreeDScene):
     def construct(self):
-        def f(x, y):  
+        def f(x, y):
             x = torch.tensor(x, dtype=torch.float32)
             y = torch.tensor(y, dtype=torch.float32)
-            term1 = 1.5 * (1 - x)**2 * torch.exp(-0.5 * x**2 - (y + 2)**2)  
-            term2 = -2 * (x / 10 - x**3 / 2 - y**3) * torch.exp(-0.5 * (x**2 + y**2))  
-            term3 = -0.1 * torch.exp(-0.5 * (x + 2)**2 - 0.5 * y**2)  
-            return (term1 + term2 + term3 ) * 3
+            term1 = 1.5 * (1 - x) ** 2 * torch.exp(-0.5 * x**2 - (y + 2) ** 2)
+            term2 = -2 * (x / 10 - x**3 / 2 - y**3) * torch.exp(-0.5 * (x**2 + y**2))
+            term3 = -0.1 * torch.exp(-0.5 * (x + 2) ** 2 - 0.5 * y**2)
+            return (term1 + term2 + term3) * 3
 
         # 创建 3D 坐标轴
         axes = ThreeDAxes(
@@ -277,8 +297,7 @@ class GradientDescentOneVariable(Scene):
             # 更新点和切线
             new_point = Dot(color=color).move_to(axes.c2p(new_x, new_y))
             self.play(
-                Transform(point, new_point),
-                Transform(tangent_line, new_tangent_line)
+                Transform(point, new_point), Transform(tangent_line, new_tangent_line)
             )
             self.wait(0.5)
 
@@ -296,20 +315,20 @@ class GradientDescentOneVariable(Scene):
 class ComplexTVariable(ThreeDScene):
     def ComplexFunction(self, x):
         """定义函数： y = (x^2)/20 - cos(x) + sin(2x)/2"""
-        return (x ** 2) / 20 - math.cos(x) + math.sin(2 * x) / 2
+        return (x**2) / 20 - math.cos(x) + math.sin(2 * x) / 2
 
     def get_derivative_function(self):
         """使用 SymPy 计算 ComplexFunction 的导数，并返回一个可调用的数值函数"""
-        x = sp.symbols('x')
+        x = sp.symbols("x")
         # 定义符号表达式
-        f = (x ** 2) / 20 - sp.cos(x) + sp.sin(2 * x) / 2
+        f = (x**2) / 20 - sp.cos(x) + sp.sin(2 * x) / 2
         # 计算导数
         f_prime = sp.diff(f, x)
         # 打印函数和导数（可选）
         # print("f(x) =", f)
         # print("f'(x) =", f_prime)
         # 将符号表达式转换为数值函数
-        f_prime_lambdified = sp.lambdify(x, f_prime, modules=['numpy'])
+        f_prime_lambdified = sp.lambdify(x, f_prime, modules=["numpy"])
         return f_prime_lambdified
 
     def get_function_range(self, x_min, x_max, num_samples=200):
@@ -339,7 +358,9 @@ class ComplexTVariable(ThreeDScene):
         x_start = max(x - half_length, x_min)
         x_end = min(x + half_length, x_max)
 
-        return axes.plot(lambda x_val: m * x_val + b, x_range=[x_start, x_end], color=GREEN)
+        return axes.plot(
+            lambda x_val: m * x_val + b, x_range=[x_start, x_end], color=GREEN
+        )
 
     def construct(self):
         # 定义 x 范围
@@ -402,8 +423,7 @@ class ComplexTVariable(ThreeDScene):
 
             # 动画：移动点、更新切线
             self.play(
-                Transform(point, new_point),
-                Transform(tangent_line, new_tangent_line)
+                Transform(point, new_point), Transform(tangent_line, new_tangent_line)
             )
 
             # 标注当前迭代的 x 值
@@ -417,24 +437,25 @@ class ComplexTVariable(ThreeDScene):
 
         self.wait(2)
 
+
 class GradientDescentTwoVariable(ThreeDScene):
     def construct(self):
-        def f(x, y):  
+        def f(x, y):
             x = torch.tensor(x, dtype=torch.float32)
             y = torch.tensor(y, dtype=torch.float32)
-            term1 = 1.5 * (1 - x)**2 * torch.exp(-0.5 * x**2 - (y + 2)**2)  
-            term2 = -2 * (x / 10 - x**3 / 2 - y**3) * torch.exp(-0.5 * (x**2 + y**2))  
-            term3 = -0.1 * torch.exp(-0.5 * (x + 2)**2 - 0.5 * y**2)  
-            return (term1 + term2 + term3 ) * 3
-        
-        # 创建三维坐标轴  
-        axes = ThreeDAxes(  
-            x_range=[-3, 3, 1],  
-            y_range=[-3, 3, 1],  
-            z_range=[-10, 10, 2],  
-            axis_config={"color": BLUE},  
-        )  
-        axes_labels = axes.get_axis_labels(x_label="x", y_label="y", z_label="z")  
+            term1 = 1.5 * (1 - x) ** 2 * torch.exp(-0.5 * x**2 - (y + 2) ** 2)
+            term2 = -2 * (x / 10 - x**3 / 2 - y**3) * torch.exp(-0.5 * (x**2 + y**2))
+            term3 = -0.1 * torch.exp(-0.5 * (x + 2) ** 2 - 0.5 * y**2)
+            return (term1 + term2 + term3) * 3
+
+        # 创建三维坐标轴
+        axes = ThreeDAxes(
+            x_range=[-3, 3, 1],
+            y_range=[-3, 3, 1],
+            z_range=[-10, 10, 2],
+            axis_config={"color": BLUE},
+        )
+        axes_labels = axes.get_axis_labels(x_label="x", y_label="y", z_label="z")
 
         # 创建表面
         resolution = 20  # 网格分辨率
@@ -452,46 +473,46 @@ class GradientDescentTwoVariable(ThreeDScene):
         surface.set_style(fill_opacity=0.8, stroke_width=0.8)
         self.set_camera_orientation(phi=60 * DEGREES, theta=30 * DEGREES)
 
-        # 缩小整个坐标轴及其标签  
-        axes.scale(0.5)  
+        # 缩小整个坐标轴及其标签
+        axes.scale(0.5)
         surface.scale(0.5)
 
         # 添加坐标轴和表面到场景
         self.play(Create(axes), Write(axes_labels))
-        self.play(Create(surface)) 
-        self.wait(1)  
+        self.play(Create(surface))
+        self.wait(1)
 
-        # 存储点的坐标数据  
-        selected_points = {  
-            1: np.array([-0.8, -2.3, 5.847186]),  
-            2: np.array([-0.445482, -2.384923, 3.047376]),  
-            3: np.array([-0.178311, -2.390921,  0.649276]),  
-            4: np.array([0.272616, -2.238446, -3.136957]),  
-            5: np.array([0.554393, -1.826272, -5.143542]),  
-        }  
+        # 存储点的坐标数据
+        selected_points = {
+            1: np.array([-0.8, -2.3, 5.847186]),
+            2: np.array([-0.445482, -2.384923, 3.047376]),
+            3: np.array([-0.178311, -2.390921, 0.649276]),
+            4: np.array([0.272616, -2.238446, -3.136957]),
+            5: np.array([0.554393, -1.826272, -5.143542]),
+        }
 
-        # 点的列表（确保按顺序排列）  
-        point_list = list(selected_points.values())  
+        # 点的列表（确保按顺序排列）
+        point_list = list(selected_points.values())
 
-        # 设置三维视角  
-        self.set_camera_orientation(phi=60 * DEGREES, theta=-30 * DEGREES)  
+        # 设置三维视角
+        self.set_camera_orientation(phi=60 * DEGREES, theta=-30 * DEGREES)
 
-        for i, point in enumerate(point_list):  
-            # (a) 将原始点（数据坐标）转换为 Manim 坐标系中的点  
-            manim_point = axes.coords_to_point(*point)  
-            # (b) 添加三维点——这里 Dot3D 参数改为 manim_point  
-            dot = Dot3D(manim_point, color=BLUE, radius=0.05)  # 缩小点的半径  
+        for i, point in enumerate(point_list):
+            # (a) 将原始点（数据坐标）转换为 Manim 坐标系中的点
+            manim_point = axes.coords_to_point(*point)
+            # (b) 添加三维点——这里 Dot3D 参数改为 manim_point
+            dot = Dot3D(manim_point, color=BLUE, radius=0.05)  # 缩小点的半径
 
-            # 如果有前一个点，则连接线段  
-            if i > 0:  
-                prev_manim_point = axes.coords_to_point(*point_list[i - 1])  
-                line = Line3D(prev_manim_point, manim_point, color=GREEN)  
-                self.play(Create(line), run_time=0.5)  
+            # 如果有前一个点，则连接线段
+            if i > 0:
+                prev_manim_point = axes.coords_to_point(*point_list[i - 1])
+                line = Line3D(prev_manim_point, manim_point, color=GREEN)
+                self.play(Create(line), run_time=0.5)
                 self.wait(0.5)
-            # 绘制当前点  
-            self.play(FadeIn(dot), run_time=0.2)  
+            # 绘制当前点
+            self.play(FadeIn(dot), run_time=0.2)
 
-        self.wait(2)    
+        self.wait(2)
 
 
 def render_scene(scene_class, preview=True):
@@ -519,17 +540,15 @@ if __name__ == "__main__":
     sence = QuadraticSurfaceVisualization()
     sence.render(preview=True)
     # scenes = [UnivariateQuadratic, QuadraticSurfaceVisualization, GradientDescentOneVariable, ComplexTVariable, GradientDescentTwoVariable]
-    
+
     # # 获取可用的CPU核心数
     # cpu_count = multiprocessing.cpu_count()
-    
+
     # # 创建一个进程池
     # with multiprocessing.Pool(processes=cpu_count) as pool:
     #     # 异步渲染所有场景
     #     results = [pool.apply_async(render_scene, args=(scene, True)) for scene in scenes]
-    
+
     #     # 等待所有渲染任务完成
     #     for r in results:
     #         r.wait()
-    
-  
