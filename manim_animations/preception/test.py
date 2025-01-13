@@ -2,7 +2,6 @@ import tensorflow as tf
 import matplotlib.pyplot as plt  
 import numpy as np  
 from manim import *
-from CustomClasses import Perceptron
 
 # matplotlib 设置
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
@@ -275,12 +274,7 @@ class SimplifyLongRow(Scene):
         matrix.move_to(simplified_pixel_group.get_center())
         self.play(ReplacementTransform(simplified_pixel_group, matrix), FadeOut(pixel_num_brace), FadeOut(pixel_num_text))
         self.wait(1)
-        self.play(matrix.animate.shift(UP))
-
-        # 添加感知机
-        perceptron = Perceptron(input_label_opacity=0.0)
-        perceptron.next_to(matrix, DOWN, buff=1.5)
-        self.play(Create(perceptron))
+        self.play(matrix.animate.to_edge(UP))
         self.wait(1)
 
     def load_mnist_image(self, label_target=1, index=0):  
@@ -449,11 +443,174 @@ class SimplifyLongRow(Scene):
         return simplified_row  
 
 
+class Test(Scene):
+    def construct(self):
+        # 创建矩阵对象
+        X_matrix = (
+            Matrix(
+                [["x_{1}", "x_{2}", "\dots", "x_{4}"]],
+                h_buff=0.8,
+                bracket_h_buff=SMALL_BUFF,
+                bracket_v_buff=SMALL_BUFF,
+            )
+            .to_edge(UP)
+            .scale(0.8)
+        )
+        self.play(Create(X_matrix))
+        self.wait(1)
+
+        # 获取矩阵条目，用于Transformations
+        # Entry 0: MathTex('x_{1}')
+        # Entry 1: MathTex('x_{2}')
+        # Entry 2: MathTex('\\dots')
+        # Entry 3: MathTex('x_{4}')
+        X_entries = X_matrix.get_entries()
+
+        # 打印出矩阵条目及对应索引
+        for entry, index in zip(X_entries, range(len(X_entries))):
+            print(f"Entry {index}: {entry}")
+        
+        # ==============================  
+        # 1. 参数设置（和原先逻辑保持一致）  
+        # ==============================  
+        receive_center = ORIGIN  
+        n_inputs = 4  # 可自行修改  
+        input_line_color = "#6ab7ff"  
+        input_line_tip_length = 0.2  
+        input_line_opacity = 0.6  
+        input_label_opacity = 0  
+        receive_color = "#ff9e9e"  
+        output_line_color = GREEN  
+        output_line_tip_length = 0.3  
+        output_line_opacity = 0.6  
+        output_label_opacity = 1  
+
+        # ==============================  
+        # 2. 创建“接收层”（感知机主体）  
+        # ==============================  
+        receive_layer = Circle(radius=0.5, fill_opacity=1, color=receive_color)  
+        receive_layer.move_to(receive_center)  
+
+        # ==============================  
+        # 3. 创建输出层及标签  
+        # ==============================  
+        output_layer = Circle(radius=0.2)  
+        output_layer.next_to(receive_layer, RIGHT, buff=2.5)  
+        output_label = MathTex("y").scale(0.8)  
+        output_label.move_to(output_layer.get_center()).set_opacity(output_label_opacity)  
+
+        # ==============================  
+        # 4. 创建输入层及标签  
+        #    （根据 n_inputs 判断是否显示省略号）  
+        # ==============================  
+        if n_inputs <= 3:  
+            # 输入数量不超过3，全部显示  
+            input_circles = VGroup(  
+                *[  
+                    Circle(radius=0.2, fill_opacity=1, color=input_line_color)  
+                    for _ in range(n_inputs)  
+                ]  
+            )  
+            input_circles.arrange(DOWN, buff=0.7)  
+            input_circles.next_to(receive_layer, LEFT, buff=2.5)  
+
+            input_labels = VGroup(  
+                *[  
+                    MathTex(f"x_{{{i+1}}}").scale(0.8)  
+                    .move_to(neuron.get_center())  
+                    .set_opacity(input_label_opacity)  
+                    for i, neuron in enumerate(input_circles)  
+                ]  
+            )  
+
+        else:  
+            # 输入数量超过3，显示 x1, x2, ..., x_n  
+            input_circles = VGroup(  
+                Circle(radius=0.2, fill_opacity=1, color=input_line_color),  
+                Circle(radius=0.2, fill_opacity=1, color=input_line_color),  
+                Tex("...").scale(0.8),  
+                Circle(radius=0.2, fill_opacity=1, color=input_line_color),  
+            )  
+            input_circles.arrange(DOWN, buff=0.7)  
+            input_circles.next_to(receive_layer, LEFT, buff=2.5)  
+
+            input_labels = VGroup(  
+                MathTex("x_{1}").scale(0.8)  
+                    .move_to(input_circles[0].get_center())  
+                    .set_opacity(input_label_opacity),  
+                MathTex("x_{2}").scale(0.8)  
+                    .move_to(input_circles[1].get_center())  
+                    .set_opacity(input_label_opacity),  
+                MathTex("...").scale(0.8)  
+                    .move_to(input_circles[2].get_center())  
+                    .set_opacity(input_label_opacity),  
+                MathTex(f"x_{{{n_inputs}}}").scale(0.8)  
+                    .move_to(input_circles[3].get_center())  
+                    .set_opacity(input_label_opacity),  
+            )  
+
+        # ==============================  
+        # 5. 创建从输入层到接收层的连接箭头  
+        # ==============================  
+        connections = VGroup()  
+        for obj in input_circles:  
+            # 只有 Circle 才画箭头，“...”跳过  
+            if isinstance(obj, Circle):  
+                arrow = Arrow(  
+                    start=obj.get_right(),  
+                    end=receive_layer.get_center(),  
+                    color=input_line_color,  
+                    stroke_opacity=input_line_opacity,  
+                    tip_length=input_line_tip_length,  
+                    buff=0.6,  
+                )  
+                connections.add(arrow)  
+
+        # ==============================  
+        # 6. 创建从接收层到输出层的箭头  
+        # ==============================  
+        output_arrow = Arrow(  
+            start=receive_layer.get_center(),  
+            end=output_layer.get_center(),  
+            color=output_line_color,  
+            stroke_opacity=output_line_opacity,  
+            tip_length=output_line_tip_length,  
+            buff=0.6,  
+        )  
+        
+        perceptron_group = VGroup(input_labels, receive_layer, output_label, connections, output_arrow)
+        perceptron_group.scale(0.6).next_to(X_matrix, DOWN)
+
+        # 接下来，让矩阵中每个 MathTex 条目移动到对应输入标签那里  
+        # 1. 如果要“复制”并移动，可使用 Transform(entry.copy(), label)  
+        # 2. 如果直接移动现有的 entry，则使用 entry.animate.move_to(...)  
+        # 下面以复制并变换示例：  
+        animations = []  
+        for entry, label in zip(X_entries, input_labels):  
+            # 创建移动动画  
+            animations.append(entry.copy().animate.move_to(label.get_center()))  
+            # 可选：调整动画持续时间  
+            # self.play(entry.animate.move_to(label.get_center()), run_time=1)  
+        
+        # 一次性播放所有动画  
+        self.play(*animations, run_time=2)  
+        self.wait(1)  
+
+
+        # # 若想保留最终效果，可以留在场上，也可以再执行一些其他动画  
+        # self.play(Indicate(receive_layer))  
+        # self.wait(2)  
+
+        
+        self.play(Create(perceptron_group))
+        self.wait(1)
+        
+
 
 if __name__ == "__main__":
     config.pixel_height = 720  # 设置垂直分辨率
     config.pixel_width = 1280  # 设置水平分辨率
     config.frame_rate = 30  # 设置帧率
 
-    sence = HandwritingVisualization()
+    sence = Test()
     sence.render(preview=True)
