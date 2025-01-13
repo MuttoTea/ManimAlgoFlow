@@ -579,7 +579,7 @@ class Test(Scene):
         )  
         
         perceptron_group = VGroup(input_labels, receive_layer, output_label, connections, output_arrow)
-        perceptron_group.scale(0.6).next_to(X_matrix, DOWN)
+        perceptron_group.scale(0.6)
 
         # 接下来，让矩阵中每个 MathTex 条目移动到对应输入标签那里  
         # 1. 如果要“复制”并移动，可使用 Transform(entry.copy(), label)  
@@ -596,12 +596,6 @@ class Test(Scene):
         self.play(*animations, run_time=2)  
         self.wait(1)  
 
-
-        # # 若想保留最终效果，可以留在场上，也可以再执行一些其他动画  
-        # self.play(Indicate(receive_layer))  
-        # self.wait(2)  
-
-        
         self.play(Create(perceptron_group))
         self.wait(1)
         
