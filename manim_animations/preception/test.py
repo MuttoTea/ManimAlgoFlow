@@ -4,32 +4,11 @@ import numpy as np
 from manim import *
 from CustomClasses import Perceptron
 from perceptron_models import SinglePerceptron
+# from CustomFunction import load_mnist_image, create_pixel_group
 
 # matplotlib 设置
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 
-
-# 加载 MNIST 数据集  
-mnist = tf.keras.datasets.mnist  
-(image_train, label_train), (image_test, label_test) = mnist.load_data()
-
-# # 选择一张图片（例如第一张训练图片）  
-# index_1 = 0  
-# image_1 = x_train[index_1]  
-# label_1 = y_train[index_1]  
-
-# # 打印标签  
-# print('训练集第一张图片的标签:')
-# print(f'标签: {label_1}')  
-
-# # 打印像素值  
-# print('像素值:')  
-# print(image_1)  
-
-# # 可视化图片  
-# plt.imshow(image_1, cmap='gray')  
-# plt.title(f'标签: {label_1}')  
-# plt.show()
 def load_mnist_image(label_target=1, index=0):  
     """  
     加载 MNIST 数据集并选择指定标签的图片。  
@@ -98,6 +77,28 @@ def create_pixel_group(image, pixel_size=0.2, spacing=0.05):
             pixel_group.add(square)  
     
     return pixel_group  
+
+# 加载 MNIST 数据集  
+mnist = tf.keras.datasets.mnist  
+(image_train, label_train), (image_test, label_test) = mnist.load_data()
+
+# # 选择一张图片（例如第一张训练图片）  
+# index_1 = 0  
+# image_1 = x_train[index_1]  
+# label_1 = y_train[index_1]  
+
+# # 打印标签  
+# print('训练集第一张图片的标签:')
+# print(f'标签: {label_1}')  
+
+# # 打印像素值  
+# print('像素值:')  
+# print(image_1)  
+
+# # 可视化图片  
+# plt.imshow(image_1, cmap='gray')  
+# plt.title(f'标签: {label_1}')  
+# plt.show()
 
 class HandwritingVisualization(Scene):
     def construct(self):
@@ -421,11 +422,3 @@ class Test(Scene):
             self.play(FadeIn(pixel_group),FadeIn(output_label))
             self.wait(1)
             self.play(FadeOut(pixel_group), FadeOut(output_label))
-        
-if __name__ == "__main__":
-    config.pixel_height = 720  # 设置垂直分辨率
-    config.pixel_width = 1280  # 设置水平分辨率
-    config.frame_rate = 30  # 设置帧率
-
-    sence = Test()
-    sence.render(preview=True)

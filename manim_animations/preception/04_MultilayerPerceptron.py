@@ -317,6 +317,8 @@ class XorCoordinateSystem(Scene):
         )
 
         # 创建神经元3
+        # 别问为什么有感知机类还要再创建，问就是不想再改了
+        # 这AI不仅能补代码，还能写吐槽，看来训练样本里夹杂着不少程序员的怨念啊
         # 输入层
         input_layer_3 = VGroup(
             *[Circle(radius=0.2, fill_opacity=1, color=input_color) for _ in range(2)]
@@ -458,6 +460,53 @@ class XorCoordinateSystem(Scene):
             Transform(Group(input_labels_1, input_labels_2), Group(x1, x2)),
         )
         self.wait(1)
+        self.play(FadeOut(axes), FadeOut(axes_labels), FadeOut(dot_y0_row2), FadeOut(dot_y0_row3), FadeOut(dot_y1_row4), FadeOut(dot_y1_row5), FadeOut(graph1), FadeOut(graph4))
+        self.wait(1)
+
+        # 设置坐标轴  
+        axes_1 = Axes(  
+            x_range=[-5, 5, 1],  
+            y_range=[-0.5, 1.5, 0.5],  
+            axis_config={"include_numbers": True},  
+        )  
+
+        axes_2 = Axes(
+            x_range=[-5, 5, 1],
+            y_range=[-0.5, 1.5, 0.5],
+            axis_config={"include_numbers": True},
+        )
+
+        axes_labels_1 = axes_1.get_axis_labels(x_label="x")  
+        axes_labels_2 = axes_2.get_axis_labels(x_label="x")
+
+        # 定义阶跃函数  
+        def step_func(x):  
+            return 1 if x >= 0 else 0  
+
+        step_graph = axes_1.plot(step_func, color=BLUE, discontinuities=[0], use_smoothing=False)  
+
+        # 定义 Sigmoid 函数  
+        def sigmoid(x):  
+            return 1 / (1 + np.exp(-x))  
+
+        sigmoid_graph = axes_1.plot(sigmoid, color=RED)  
+
+        # 添加函数图像的标签  
+        step_label = MathTex("f(x)=\\begin{cases} 1 & x \\geq 0 \\\\ 0 & x < 0 \\end{cases}").set_color(BLUE).next_to(step_graph, UP, buff=2.2)  
+        sigmoid_label = MathTex("f(x)=\\frac{1}{1 + e^{-x}}").set_color(RED).next_to(sigmoid_graph, UP, buff=2.2)  
+
+        Group1 = VGroup(axes_1, axes_labels_1, step_graph, step_label).scale(0.5)
+        Group2 = VGroup(axes_2, axes_labels_2, sigmoid_graph, sigmoid_label).scale(0.5).to_edge(RIGHT)
+        Group3 = VGroup(Group1, Group2).to_edge(UP, buff=0.1)
+
+        # 绘制图像  
+        self.play(Create(Group1))
+        self.wait(1)
+        self.play(Group1.animate.to_edge(LEFT))
+        self.wait(1)
+        self.play(Create(Group2))
+        self.wait(1)
+
 
     def func1(self, x):
         return x + 0.5
@@ -470,3 +519,12 @@ class XorCoordinateSystem(Scene):
 
     def func4(self, x):
         return x - 0.5
+
+
+if __name__ == "__main__":
+    config.pixel_height = 720
+    config.pixel_width = 1280
+    config.frame_rate = 30
+
+    scene = XorCoordinateSystem()
+    scene.render(preview=True)
