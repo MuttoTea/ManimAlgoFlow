@@ -1,3 +1,13 @@
+"""  
+摘要：  
+该代码使用 Manim 库创建多个动画场景，展示鸢尾花数据集及其特征选择和数据可视化的过程。具体包括：  
+1. LirsDataTitle：展示鸢尾花数据集的简介，包括不同种类的鸢尾花及其图片。  
+2. FeatureSelcet：展示鸢尾花的特征（花萼长度和宽度）以及分类对象（山鸢尾和变色鸢尾）。  
+3. LirdDataVisual：可视化鸢尾花数据集，训练感知器模型，并绘制决策边界。  
+4. CoordinateSystem：创建坐标轴，展示鸢尾花数据点及其对应的超平面，并添加注释。  
+
+"""  
+
 from manim import *
 from perceptron_models import SinglePerceptron
 from DataProcessor import IrisDataProcessor
@@ -145,8 +155,6 @@ class LirdDataVisual(Scene):
         # 数据处理
         data_processor = IrisDataProcessor()
         X, y = data_processor.get_data()
-        # print("特征数据（X）:", X)
-        # print("标签数据（y）:", y)
 
         # 训练感知机
         model = SinglePerceptron(learning_rate=0.1, n_iterations=1000)
@@ -157,9 +165,6 @@ class LirdDataVisual(Scene):
         b = model.bias - 0.1
         slope = -w1 / w2
         intercept = -b / w2
-
-        # print(f"模型权重: w1={w1}, w2={w2}, bias={b}")
-        # print(f"决策边界: y = {slope:.2f}x + {intercept:.2f}")
 
         # 创建坐标轴
         axes = Axes(
@@ -181,9 +186,6 @@ class LirdDataVisual(Scene):
 
         setosa_points = [(X[i, 0], X[i, 1]) for i in setosa_indices]
         versicolor_points = [(X[i, 0], X[i, 1]) for i in versicolor_indices]
-
-        # print("山鸢尾点:", setosa_points)
-        # print("变色鸢尾点:", versicolor_points)
 
         # 创建散点
         setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]
@@ -250,8 +252,6 @@ class CoordinateSystem(Scene):
         # 数据处理
         data_processor = IrisDataProcessor()
         X, y = data_processor.get_data()
-        # print("特征数据（X）:", X)
-        # print("标签数据（y）:", y)
 
         # 训练感知机
         model = SinglePerceptron(learning_rate=0.1, n_iterations=1000)
@@ -262,9 +262,6 @@ class CoordinateSystem(Scene):
         b = model.bias - 0.1
         slope = -w1 / w2
         intercept = -b / w2
-
-        # print(f"模型权重: w1={w1}, w2={w2}, bias={b}")
-        # print(f"决策边界: y = {slope:.2f}x + {intercept:.2f}")
 
         # 创建坐标轴
         axes = Axes(
@@ -286,9 +283,6 @@ class CoordinateSystem(Scene):
 
         setosa_points = [(X[i, 0], X[i, 1]) for i in setosa_indices]
         versicolor_points = [(X[i, 0], X[i, 1]) for i in versicolor_indices]
-
-        # print("山鸢尾点:", setosa_points)
-        # print("变色鸢尾点:", versicolor_points)
 
         # 创建散点
         setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]

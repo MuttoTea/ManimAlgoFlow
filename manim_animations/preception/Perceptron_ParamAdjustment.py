@@ -1,9 +1,24 @@
+"""  
+摘要：  
+该代码使用 Manim 库创建多个动画场景，展示数学和机器学习中的一些概念，包括：  
+
+1. **UnivariateQuadratic**：展示一元二次函数的图像，演示如何通过求导找到函数的最小值，并标注最小值点。  
+
+2. **QuadraticSurfaceVisualization**：在三维空间中可视化一个复杂的二次曲面，展示其形状和特性。  
+
+3. **GradientDescentOneVariable**：演示一维梯度下降法，包括可变步长和固定步长的实现，帮助观众理解梯度下降的过程。  
+
+4. **ComplexTVariable**：展示一个复杂函数的图像及其导数，演示梯度下降的过程。  
+
+5. **GradientDescentTwoVariable**：在三维空间中可视化一个复杂函数的表面，并展示在该表面上进行的梯度下降过程。  
+  
+"""  
+
 from manim import *
 import torch
 import math
 import sympy as sp
-import multiprocessing
-import time
+
 
 
 class UnivariateQuadratic(Scene):
@@ -513,42 +528,3 @@ class GradientDescentTwoVariable(ThreeDScene):
             self.play(FadeIn(dot), run_time=0.2)
 
         self.wait(2)
-
-
-def render_scene(scene_class, preview=True):
-    """
-    渲染单个场景的辅助函数，并记录每个场景的运行时间和错误。
-    """
-    start_time = time.time()
-    try:
-        scene = scene_class()
-        scene.render(preview=preview)
-        end_time = time.time()
-        elapsed = end_time - start_time
-        print(f"{scene_class.__name__} 渲染完成，耗时 {elapsed:.2f} 秒。")
-    except Exception as e:
-        end_time = time.time()
-        elapsed = end_time - start_time
-        print(f"{scene_class.__name__} 渲染失败，耗时 {elapsed:.2f} 秒。错误: {e}")
-
-
-if __name__ == "__main__":
-    config.pixel_height = 720  # 设置垂直分辨率
-    config.pixel_width = 1280  # 设置水平分辨率
-    config.frame_rate = 30  # 设置帧率
-
-    sence = QuadraticSurfaceVisualization()
-    sence.render(preview=True)
-    # scenes = [UnivariateQuadratic, QuadraticSurfaceVisualization, GradientDescentOneVariable, ComplexTVariable, GradientDescentTwoVariable]
-
-    # # 获取可用的CPU核心数
-    # cpu_count = multiprocessing.cpu_count()
-
-    # # 创建一个进程池
-    # with multiprocessing.Pool(processes=cpu_count) as pool:
-    #     # 异步渲染所有场景
-    #     results = [pool.apply_async(render_scene, args=(scene, True)) for scene in scenes]
-
-    #     # 等待所有渲染任务完成
-    #     for r in results:
-    #         r.wait()

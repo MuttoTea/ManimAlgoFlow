@@ -1,3 +1,17 @@
+"""
+摘要：  
+该代码使用 Manim 库创建一个简单的动画场景，展示了四个文本元素，分别代表不同的主题：  
+1. 数据分类  
+2. 字迹识别  
+3. 肿瘤识别  
+4. 其他主题（以“......”表示）  
+
+动画过程包括：  
+- 依次写出每个文本，设置不同的颜色。  
+- 将文本移动到不同的位置。  
+- 最后将所有文本淡出，结束场景。  
+"""  
+
 from manim import *
 
 
@@ -24,12 +38,3 @@ class Prologue(Scene):
         self.wait(1)
         self.play(FadeOut(Group(text1, text2, text3, text4)))
         self.wait(1)
-
-
-# if __name__ == "__main__":
-#     config.pixel_height = 720  # 设置垂直分辨率
-#     config.pixel_width = 1280  # 设置水平分辨率
-#     config.frame_rate = 30  # 设置帧率
-
-#     sence = LirsDataTitle()
-#     sence.render(preview=True)

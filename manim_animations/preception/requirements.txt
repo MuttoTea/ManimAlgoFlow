@@ -1,0 +1,9 @@
+manim==0.19.0
+matplotlib==3.10.0
+numpy==2.2.2
+pandas==2.2.3
+scikit_learn==1.6.1
+sympy==1.13.1
+tensorflow==2.18.0
+tensorflow_intel==2.18.0
+torch==2.5.1

@@ -1,3 +1,18 @@
+"""  
+摘要：  
+该代码使用 TensorFlow 和 Manim 库创建多个动画场景，展示手写数字识别的过程，特别是通过感知机进行二分类的示例。主要内容包括：  
+
+1. **手写数字可视化**：加载 MNIST 数据集中的手写数字图片，并将其转换为像素方块的形式进行展示。通过动画展示灰度值的变化和图像的尺寸标注。  
+
+2. **简化像素行**：将手写数字的像素行简化为一个长行，并展示其矩阵形式。  
+
+3. **感知机结构**：展示感知机的输入层和输出层，演示如何将输入数据（手写数字的像素）传递到感知机中进行分类。  
+
+4. **二分类示例**：从 MNIST 数据集中选择数字 0 和 1 的图片，展示感知机如何对这些图片进行分类。  
+  
+"""  
+
+
 import tensorflow as tf  
 import matplotlib.pyplot as plt  
 import numpy as np  
@@ -207,35 +222,21 @@ class SimplifyLongRow(Scene):
         # 加载 MNIST 数据集并选择第一张标签为1的图片  
         image, label = load_mnist_image(label_target=1, index=0)  
 
-        # 打印加载的图像信息  
-        print(f"加载的图像形状: {image.shape}")  # 应为 (28, 28)  
-        print(f"图像标签: {label}")  
-        
         # 创建像素组并播放创建动画  
         pixel_group = create_pixel_group(image)  
         self.play(Create(pixel_group))  
-        print("像素组创建完成")  
         self.wait(1)  
 
         # 排列像素组并播放转换动画  
         arranged_group = self.arrange_pixel_group(pixel_group)  
         self.play(ReplacementTransform(pixel_group, arranged_group))  
-        print("像素组排列完成")  
         self.wait(1)  
 
         # 将多行像素扁平化为一个长行  
         long_row = VGroup(*[pixel for row in arranged_group for pixel in row]).arrange(RIGHT, buff=0.05)  
-        print("像素合并完成")  
-
-        # 打印长行的像素信息  
-        print(f"Long Row 中的像素数量: {len(long_row)}")  # 应为784  
-        for idx, pixel in enumerate(long_row[:10]):  
-            print(f"Pixel {idx}: Position = {pixel.get_center()}")  
-        print("...")  
 
         # 简化长行并播放转换动画  
         simplified_group = self.simplify_long_row(long_row)  
-        print("像素简化完成")  
         self.play(ReplacementTransform(arranged_group, simplified_group))  
         self.wait(1)  
 
@@ -448,12 +449,3 @@ class PerceptronBinaryClassification(Scene):
             self.play(FadeIn(pixel_group), FadeIn(output_label))  
             self.wait(1)  
             self.play(FadeOut(pixel_group), FadeOut(output_label))  
-
-
-if __name__ == "__main__":
-    config.pixel_height = 720  # 设置垂直分辨率
-    config.pixel_width = 1280  # 设置水平分辨率
-    config.frame_rate = 30  # 设置帧率
-
-    sence = MatrixToPerceptronScene()
-    sence.render(preview=True)

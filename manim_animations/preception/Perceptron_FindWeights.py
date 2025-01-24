@@ -1,3 +1,19 @@
+"""  
+摘要：  
+该代码使用 Manim 库创建一个动画场景，展示感知器（Perceptron）模型的权重计算和分类过程。  
+具体步骤包括：  
+1. 数据处理：使用 IrisDataProcessor 获取鸢尾花数据集的特征和标签。  
+2. 设置权重和偏置：定义感知器的权重和偏置，并计算直线的斜率和截距。  
+3. 创建坐标轴：使用 Axes 类创建坐标系，设置 x 轴和 y 轴的范围和标签。  
+4. 数学公式展示：创建数学公式，表示感知器的线性方程，并逐步替换权重和偏置的值。  
+5. 数据点可视化：筛选不同类别的鸢尾花数据点，并在坐标系中绘制散点图。  
+6. 绘制超平面：根据计算出的斜率和截距绘制超平面（决策边界）。  
+7. 选择特定数据点：选择特定的 Setosa 和 Versicolor 数据点，并为它们创建标签。  
+8. 动画效果：通过动画展示数据点的选择、替换数学公式中的变量、绘制超平面等过程。  
+9. 分类结果展示：计算每个数据点的分类结果，并根据结果显示相应的文本（如“分类正确”或“分类错误”）。  
+10. 最终结果：显示损失/代价的计算结果，强调感知器模型的输出。  
+"""  
+
 from manim import *
 from DataProcessor import IrisDataProcessor
 
@@ -50,9 +66,6 @@ class PerceptronFindWeights(Scene):
 
         setosa_points = [(X[i, 0], X[i, 1]) for i in setosa_indices]
         versicolor_points = [(X[i, 0], X[i, 1]) for i in versicolor_indices]
-
-        print("山鸢尾点:", setosa_points)
-        print("变色鸢尾点:", versicolor_points)
 
         # 创建散点
         setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]
