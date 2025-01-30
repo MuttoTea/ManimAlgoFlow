@@ -1,82 +1,99 @@
-# main.py  
+"""  
+Summary:  
+This code implements the loading, preprocessing, and training/evaluation of two different perceptron models on the MNIST dataset. The main functionalities include:  
+
+1. Data Loading: Uses the `fetch_openml` function to load the MNIST dataset and filter samples for digits 0 and 1.  
+2. Data Preprocessing:  
+   - Converts labels to binary (0 and 1).  
+   - Normalizes feature data.  
+   - Splits the dataset into training and testing sets.  
+3. Model Training and Evaluation:  
+   - Trains a Single Layer Perceptron (`SinglePerceptron`) and outputs the model's accuracy.  
+   - Trains a Multi-Layer Perceptron (`MultiLayerPerceptron`) and outputs the model's accuracy.  
+"""  
+
 import numpy as np  
 from sklearn.datasets import fetch_openml  
 from sklearn.model_selection import train_test_split  
 from sklearn.metrics import accuracy_score  
-from perceptron_models import SinglePerceptron, MultiLayerPerceptron
+from perceptron_models import SinglePerceptron, MultiLayerPerceptron  
 
-def main_single_perceptron():  
-    # 加载MNIST数据集  
-    print("加载MNIST数据集...")  
-    mnist = fetch_openml('mnist_784', version=1, as_frame=False)  
-    X, y = mnist["data"], mnist["target"]  
+def main_single_layer_perceptron():  
+    """Load the MNIST dataset, preprocess it, and train a Single Layer Perceptron."""  
+    
+    # Load the MNIST dataset  
+    print("Loading MNIST dataset...")  
+    mnist_data = fetch_openml('mnist_784', version=1, as_frame=False)  
+    features, labels = mnist_data["data"], mnist_data["target"]  
 
-    # 筛选数字0和1  
-    print("筛选数字0和1...")  
-    mask = (y == '0') | (y == '1')  
-    X, y = X[mask], y[mask]  
+    # Filter for digits 0 and 1  
+    print("Filtering for digits 0 and 1...")  
+    filter_mask = (labels == '0') | (labels == '1')  
+    features, labels = features[filter_mask], labels[filter_mask]  
 
-    # 将标签转换为二进制  
-    y = np.where(y == '0', 0, 1)  
+    # Convert labels to binary  
+    labels = np.where(labels == '0', 0, 1)  
 
-    # 数据归一化  
-    X = X / 255.0  
+    # Normalize feature data  
+    features = features / 255.0  
 
-    # 分割训练集和测试集  
-    print("分割训练集和测试集...")  
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)  
+    # Split the dataset into training and testing sets  
+    print("Splitting the dataset into training and testing sets...")  
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=42)  
 
-    # 初始化并训练感知机  
-    print("训练单层感知机模型...")  
-    perceptron = SinglePerceptron(learning_rate=0.01, n_iterations=1000)  
-    perceptron.fit(X_train, y_train)  
+    # Initialize and train the Single Layer Perceptron  
+    print("Training Single Layer Perceptron model...")  
+    single_layer_perceptron = SinglePerceptron(learning_rate=0.01, n_iterations=1000)  
+    single_layer_perceptron.fit(X_train, y_train)  
 
-    # 预测  
-    print("进行预测...")  
-    y_pred = perceptron.predict(X_test)  
+    # Make predictions  
+    print("Making predictions...")  
+    y_pred = single_layer_perceptron.predict(X_test)  
 
-    # 评估  
+    # Evaluate the model  
     accuracy = accuracy_score(y_test, y_pred)  
-    print(f"单层感知机模型准确率: {accuracy * 100:.2f}%")  
+    print(f"Single Layer Perceptron model accuracy: {accuracy * 100:.2f}%")  
 
-def main_mlp():  
-    # 加载MNIST数据集  
-    print("加载MNIST数据集...")  
-    mnist = fetch_openml('mnist_784', version=1, as_frame=False)  
-    X, y = mnist["data"], mnist["target"].astype(int)  
+def main_multi_layer_perceptron():  
+    """Load the MNIST dataset, preprocess it, and train a Multi-Layer Perceptron."""  
+    
+    # Load the MNIST dataset  
+    print("Loading MNIST dataset...")  
+    mnist_data = fetch_openml('mnist_784', version=1, as_frame=False)  
+    features, labels = mnist_data["data"], mnist_data["target"].astype(int)  
 
-    # 数据归一化  
-    X = X / 255.0  
+    # Normalize feature data  
+    features = features / 255.0  
 
-    # 分割训练集和测试集  
-    print("分割训练集和测试集...")  
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)  
+    # Split the dataset into training and testing sets  
+    print("Splitting the dataset into training and testing sets...")  
+    X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=42)  
 
-    # 初始化多层感知机  
-    input_size = X_train.shape[1]  # 784  
-    hidden_sizes = [128, 64]        # 可根据需要调整  
-    output_size = 10                # 0-9  
+    # Initialize the Multi-Layer Perceptron  
+    input_size = X_train.shape[1]  # 784 features  
+    hidden_layer_sizes = [128, 64]  # Adjustable hidden layer sizes  
+    output_size = 10  # Digits 0-9  
     learning_rate = 0.01  
     n_epochs = 100  
 
-    print("初始化多层感知机模型...")  
-    mlp = MultiLayerPerceptron(input_size, hidden_sizes, output_size, learning_rate, n_epochs)  
+    print("Initializing Multi-Layer Perceptron model...")  
+    multi_layer_perceptron = MultiLayerPerceptron(input_size, hidden_layer_sizes, output_size, learning_rate, n_epochs)  
 
-    # 训练模型  
-    print("训练多层感知机模型...")  
-    mlp.fit(X_train, y_train)  
+    # Train the model  
+    print("Training Multi-Layer Perceptron model...")  
+    multi_layer_perceptron.fit(X_train, y_train)  
 
-    # 预测  
-    print("进行预测...")  
-    y_pred = mlp.predict(X_test)  
+    # Make predictions  
+    print("Making predictions...")  
+    y_pred = multi_layer_perceptron.predict(X_test)  
 
-    # 评估  
+    # Evaluate the model  
     accuracy = accuracy_score(y_test, y_pred)  
-    print(f"多层感知机模型准确率: {accuracy * 100:.2f}%")  
+    print(f"Multi-Layer Perceptron model accuracy: {accuracy * 100:.2f}%")  
 
 if __name__ == "__main__":  
-    # 训练和评估单层感知机  
-    main_single_perceptron()  
+    # Train and evaluate the Single Layer Perceptron  
+    main_single_layer_perceptron()  
     
-    # 训练和评估多层感知机  
-    main_mlp()
+    # Train and evaluate the Multi-Layer Perceptron  
+    main_multi_layer_perceptron()

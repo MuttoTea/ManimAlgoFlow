@@ -1,42 +1,57 @@
+"""  
+Summary:  
+This code implements the functionality to load, preprocess the MNIST dataset, and train and evaluate a Single Layer Perceptron model. The main features include:  
+
+1. Data Loading: Uses the `fetch_openml` function to load the MNIST dataset and filter samples for digits 0 and 1.  
+2. Data Preprocessing:  
+   - Converts labels to binary (0 and 1).  
+   - Normalizes feature data.  
+   - Splits the dataset into training and testing sets.  
+3. Model Training and Evaluation:  
+   - Trains the Single Layer Perceptron (`SingleLayerPerceptron`) and predicts, outputting the model's accuracy.  
+
+This code is suitable for learning and practicing machine learning and deep learning, particularly in image classification tasks.  
+"""  
+
 import numpy as np  
 from sklearn.datasets import fetch_openml  
 from sklearn.model_selection import train_test_split  
 from sklearn.metrics import accuracy_score  
-from perceptron_models import SinglePerceptron  # 导入感知机类  
+from perceptron_models import SingleLayerPerceptron 
 
 def main():  
-    # 加载MNIST数据集  
-    print("加载MNIST数据集...")  
+    # Load the MNIST dataset  
+    print("Loading MNIST dataset...")  
     mnist = fetch_openml('mnist_784', version=1, as_frame=False)  
-    X, y = mnist["data"], mnist["target"]  
+    features, labels = mnist["data"], mnist["target"]  
 
-    # 筛选数字0和1  
-    print("筛选数字0和1...")  
-    mask = (y == '0') | (y == '1')  
-    X, y = X[mask], y[mask]  
+    # Filter for digits 0 and 1  
+    print("Filtering for digits 0 and 1...")  
+    mask = (labels == '0') | (labels == '1')  
+    features, labels = features[mask], labels[mask]  
 
-    # 将标签转换为二进制  
-    y = np.where(y == '0', 0, 1)  
+    # Convert labels to binary  
+    labels = np.where(labels == '0', 0, 1)  
 
-    # 数据归一化  
-    X = X / 255.0  
+    # Normalize feature data  
+    features = features / 255.0  
 
-    # 分割训练集和测试集  
-    print("分割训练集和测试集...")  
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)  
+    # Split the dataset into training and testing sets  
+    print("Splitting the dataset into training and testing sets...")  
+    features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2, random_state=42)  
 
-    # 初始化并训练感知机  
-    print("训练感知机模型...")  
-    perceptron = SinglePerceptron(learning_rate=0.01, n_iterations=1000)  
-    perceptron.fit(X_train, y_train)  
+    # Initialize and train the perceptron model  
+    print("Training the perceptron model...")  
+    perceptron_model = SingleLayerPerceptron(learning_rate=0.01, n_iterations=1000)  
+    perceptron_model.fit(features_train, labels_train)  
 
-    # 预测  
-    print("进行预测...")  
-    y_pred = perceptron.predict(X_test)  
+    # Make predictions  
+    print("Making predictions...")  
+    labels_predicted = perceptron_model.predict(features_test)  
 
-    # 评估  
-    accuracy = accuracy_score(y_test, y_pred)  
-    print(f"模型准确率: {accuracy * 100:.2f}%")  
+    # Evaluate the model  
+    accuracy = accuracy_score(labels_test, labels_predicted)  
+    print(f"Model accuracy: {accuracy * 100:.2f}%")  
 
 if __name__ == "__main__":  
     main()

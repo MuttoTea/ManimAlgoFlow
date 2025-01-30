@@ -1,343 +1,330 @@
 """  
-摘要：  
-该代码使用 Manim 库创建多个动画场景，展示鸢尾花数据集及其特征选择和数据可视化的过程。具体包括：  
-1. LirsDataTitle：展示鸢尾花数据集的简介，包括不同种类的鸢尾花及其图片。  
-2. FeatureSelcet：展示鸢尾花的特征（花萼长度和宽度）以及分类对象（山鸢尾和变色鸢尾）。  
-3. LirdDataVisual：可视化鸢尾花数据集，训练感知器模型，并绘制决策边界。  
-4. CoordinateSystem：创建坐标轴，展示鸢尾花数据点及其对应的超平面，并添加注释。  
-
+Summary:  
+This code uses the Manim library to create multiple animation scenes that demonstrate the Iris dataset, feature selection, and data visualization processes. Specifically, it includes:  
+1. LirsDataTitle: Introduces the Iris dataset, including different species of Iris flowers and their images.  
+2. FeatureSelect: Displays the features (sepal length and width) of the Iris flowers and the classification targets (Iris-setosa and Iris-versicolor).  
+3. IrisDataVisual: Visualizes the Iris dataset, trains a perceptron model, and plots the decision boundary.  
+4. CoordinateSystem: Creates axes to display the Iris data points and their corresponding hyperplane, along with annotations.  
 """  
 
-from manim import *
-from perceptron_models import SinglePerceptron
-from DataProcessor import IrisDataProcessor
+from manim import *  
+from perceptron_models import SinglePerceptron  
+from DataProcessor import IrisDataProcessor  
 
 
-class LirsDataTitle(Scene):
-    """
-    数据集简介
-    """
+class IrisDataTitle(Scene):  
+    """Scene to introduce the Iris dataset."""  
 
-    def construct(self):
-        # 显示标题并设置字体大小和位置
-        title = Text("鸢尾花数据集", color=RED).scale(1.2)
+    def construct(self):  
+        # Create and position the title  
+        title_text = Text("鸢尾花数据集", color=RED).scale(1.2)  
 
-        # 加载图片
-        ImageSetosa = ImageMobject(
-            "C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\山鸢尾.jpg"
-        )
-        ImageVersicolor = ImageMobject(
-            "C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\变色鸢尾.jpeg"
-        )
-        ImageVirginica = ImageMobject(
-            "C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\维吉尼亚鸢尾png.png"
-        )
-        ImageP = ImageMobject(
-            "C:\Project\Adobe\PR\Perceptron\DisposalCode\media\images\罗纳德·费舍尔.jpg"
-        )
+        # Load images of different Iris species  
+        image_setosa = ImageMobject(  
+            "C:\\Project\\Adobe\\PR\\Perceptron\\DisposalCode\\media\\images\\山鸢尾.jpg"  
+        )  
+        image_versicolor = ImageMobject(  
+            "C:\\Project\\Adobe\\PR\\Perceptron\\DisposalCode\\media\\images\\变色鸢尾.jpeg"  
+        )  
+        image_virginica = ImageMobject(  
+            "C:\\Project\\Adobe\\PR\\Perceptron\\DisposalCode\\media\\images\\维吉尼亚鸢尾png.png"  
+        )  
+        image_fisher = ImageMobject(  
+            "C:\\Project\\Adobe\\PR\\Perceptron\\DisposalCode\\media\\images\\罗纳德·费舍尔.jpg"  
+        )  
 
-        # 创建文本标签
-        TextSetosa = Paragraph(
-            "山鸢尾", "(Iris Setosa)", color=BLUE, alignment="center", font_size=20
-        )
-        TextVersicolor = Paragraph(
-            "变色鸢尾",
-            "(Iris Versicolor)",
-            color=BLUE,
-            alignment="center",
-            font_size=20,
-        )
-        TextVirginica = Paragraph(
-            "维吉尼亚鸢尾",
-            "(Iris Virginica)",
-            color=BLUE,
-            alignment="center",
-            font_size=20,
-        )
-        TextP_title = Text("罗纳德·费舍尔", color=YELLOW, font_size=20)
-        TextP_date = MathTex("1890-1962", color=YELLOW).scale(0.7)
+        # Create labels for the images  
+        label_setosa = Paragraph(  
+            "山鸢尾", "(Iris Setosa)", color=BLUE, alignment="center", font_size=20  
+        )  
+        label_versicolor = Paragraph(  
+            "变色鸢尾",  
+            "(Iris Versicolor)",  
+            color=BLUE,  
+            alignment="center",  
+            font_size=20,  
+        )  
+        label_virginica = Paragraph(  
+            "维吉尼亚鸢尾",  
+            "(Iris Virginica)",  
+            color=BLUE,  
+            alignment="center",  
+            font_size=20,  
+        )  
+        label_fisher_title = Text("罗纳德·费舍尔", color=YELLOW, font_size=20)  
+        label_fisher_years = MathTex("1890-1962", color=YELLOW).scale(0.7)  
 
-        # 组合成一个组，并垂直排列
-        TextP = (
-            VGroup(TextP_title, TextP_date).arrange(DOWN, buff=0.2).set_color(YELLOW)
-        )
+        # Group the Fisher label components  
+        label_fisher = (  
+            VGroup(label_fisher_title, label_fisher_years).arrange(DOWN, buff=0.2).set_color(YELLOW)  
+        )  
 
-        # 调整图片大小
-        target_height = 2  # 目标高度
-        ImageSetosa.height = target_height
-        ImageVersicolor.height = target_height
-        ImageVirginica.height = target_height
-        ImageP.height = target_height * 1.5
+        # Resize images to a target height  
+        target_height = 2  # Target height for images  
+        image_setosa.height = target_height  
+        image_versicolor.height = target_height  
+        image_virginica.height = target_height  
+        image_fisher.height = target_height * 1.5  
 
-        # 创建图片与文本的组合
-        setosa_group = Group(ImageSetosa, TextSetosa).arrange(DOWN, buff=0.2)
-        versicolor_group = Group(ImageVersicolor, TextVersicolor).arrange(
-            DOWN, buff=0.2
-        )
-        virginica_group = Group(ImageVirginica, TextVirginica).arrange(DOWN, buff=0.2)
-        P_group = Group(ImageP, TextP).arrange(DOWN, buff=0.2)
+        # Create groups for each species and Fisher  
+        group_setosa = Group(image_setosa, label_setosa).arrange(DOWN, buff=0.2)  
+        group_versicolor = Group(image_versicolor, label_versicolor).arrange(DOWN, buff=0.2)  
+        group_virginica = Group(image_virginica, label_virginica).arrange(DOWN, buff=0.2)  
+        group_fisher = Group(image_fisher, label_fisher).arrange(DOWN, buff=0.2)  
 
-        # 显示标题
-        self.play(Write(title))
-        self.wait(0.5)
-        self.play(title.animate.shift(UP * 2.5))
-        self.wait(0.5)
+        # Display the title  
+        self.play(Write(title_text))  
+        self.wait(0.5)  
+        self.play(title_text.animate.shift(UP * 2.5))  
+        self.wait(0.5)  
 
-        # 设置组合的位置
-        versicolor_group.move_to(ORIGIN)
-        setosa_group.next_to(versicolor_group, LEFT, buff=1)
-        virginica_group.next_to(versicolor_group, RIGHT, buff=1)
+        # Position the species groups  
+        group_versicolor.move_to(ORIGIN)  
+        group_setosa.next_to(group_versicolor, LEFT, buff=1)  
+        group_virginica.next_to(group_versicolor, RIGHT, buff=1)  
 
-        # 创建一个整体组
-        full_group = Group(title, setosa_group, versicolor_group, virginica_group)
+        # Create a full group for the title and species  
+        full_group = Group(title_text, group_setosa, group_versicolor, group_virginica)  
 
-        # 添加图片和文本到场景
-        self.play(
-            FadeIn(setosa_group),
-            FadeIn(versicolor_group),
-            FadeIn(virginica_group),
-            run_time=1,
-        )
-        self.wait(0.5)
-        # 缩小并左移
-        self.play(full_group.animate.scale(0.8).shift(LEFT * 2), run_time=1)
+        # Add images and labels to the scene  
+        self.play(  
+            FadeIn(group_setosa),  
+            FadeIn(group_versicolor),  
+            FadeIn(group_virginica),  
+            run_time=1,  
+        )  
+        self.wait(0.5)  
 
-        # 将 P_group 的中轴线与 full_group 对齐
-        P_group.align_to(full_group, UP)
-        P_group.next_to(full_group, RIGHT, buff=1)
+        # Scale down and shift the full group  
+        self.play(full_group.animate.scale(0.8).shift(LEFT * 2), run_time=1)  
 
-        self.play(FadeIn(P_group), run_time=1)
-        self.wait(1)
-        self.play(FadeOut(Group(title, full_group, P_group)))
-        self.wait(1)
+        # Align Fisher group with the full group  
+        group_fisher.align_to(full_group, UP)  
+        group_fisher.next_to(full_group, RIGHT, buff=1)  
+
+        self.play(FadeIn(group_fisher), run_time=1)  
+        self.wait(1)  
+        self.play(FadeOut(Group(title_text, full_group, group_fisher)))  
+        self.wait(1)  
 
 
-class FeatureSelcet(Scene):
-    """
-    数据选择
-    """
+class FeatureSelect(Scene):  
+    """Scene to display feature selection for the Iris dataset."""  
 
-    def construct(self):
-        # 创建文本对象
-        title1 = Text("特征", color=RED).scale(1.2)
-        title2 = Text("分类对象", color=RED).scale(1.2)
-        feature_l = Text("长", color=WHITE)
-        feature_w = Text("宽", color=WHITE)
-        object_1 = Text("山鸢尾", color=WHITE)
-        object_2 = Text("变色鸢尾", color=WHITE)
+    def construct(self):  
+        # Create title texts for features and classification objects  
+        title_features = Text("特征", color=RED).scale(1.2)  
+        title_objects = Text("分类对象", color=RED).scale(1.2)  
+        feature_length = Text("长", color=WHITE)  
+        feature_width = Text("宽", color=WHITE)  
+        iris_setosa_label = Text("山鸢尾", color=WHITE)  
+        iris_versicolor_label = Text("变色鸢尾", color=WHITE)  
 
-        # 创建特征列
-        feature_column = VGroup(title1, feature_l, feature_w).arrange(DOWN, buff=0.5)
+        # Create feature and object columns  
+        feature_column = VGroup(title_features, feature_length, feature_width).arrange(DOWN, buff=0.5)  
+        object_column = VGroup(title_objects, iris_setosa_label, iris_versicolor_label).arrange(DOWN, buff=0.5)  
 
-        # 创建分类对象列
-        object_column = VGroup(title2, object_1, object_2).arrange(DOWN, buff=0.5)
+        # Arrange the columns horizontally  
+        layout = VGroup(feature_column, object_column).arrange(RIGHT, buff=2)  
 
-        # 将两列水平排列
-        layout = VGroup(feature_column, object_column).arrange(RIGHT, buff=2)
+        # Sequentially display the text objects  
+        self.play(Write(title_features))  
+        self.play(Write(feature_length), Write(feature_width))  
+        self.play(Write(title_objects))  
+        self.play(Write(iris_setosa_label), Write(iris_versicolor_label))  
 
-        # 逐步显示文本对象
-        self.play(Write(title1))
-        self.play(Write(feature_l), Write(feature_w))
-        self.play(Write(title2))
-        self.play(Write(object_1), Write(object_2))
-
-        self.wait(1)
-        self.play(FadeOut(layout))
-        self.wait(1)
+        self.wait(1)  
+        self.play(FadeOut(layout))  
+        self.wait(1)  
 
 
-class LirdDataVisual(Scene):
-    """
-    数据可视化
-    """
+class IrisDataVisual(Scene):  
+    """Scene to visualize the Iris dataset and decision boundary."""  
 
-    def construct(self):
-        # 数据处理
-        data_processor = IrisDataProcessor()
-        X, y = data_processor.get_data()
+    def construct(self):  
+        # Data processing  
+        data_processor = IrisDataProcessor()  
+        features, labels = data_processor.get_data()  
 
-        # 训练感知机
-        model = SinglePerceptron(learning_rate=0.1, n_iterations=1000)
-        model.fit(X, y)
+        # Train the perceptron model  
+        perceptron_model = SinglePerceptron(learning_rate=0.1, n_iterations=1000)  
+        perceptron_model.fit(features, labels)  
 
-        # 获取直线信息
-        w1, w2 = model.weights
-        b = model.bias - 0.1
-        slope = -w1 / w2
-        intercept = -b / w2
+        # Retrieve line parameters  
+        weight1, weight2 = perceptron_model.weights  
+        bias = perceptron_model.bias - 0.1  
+        slope = -weight1 / weight2  
+        intercept = -bias / weight2  
 
-        # 创建坐标轴
-        axes = Axes(
-            x_range=[4, 7.5, 0.5],  # x轴范围
-            y_range=[1, 5, 1],  # y轴范围
-            axis_config={"color": BLUE, "include_numbers": True},
-        )
+        # Create axes for visualization  
+        axes = Axes(  
+            x_range=[4, 7.5, 0.5],  # X-axis range  
+            y_range=[1, 5, 1],  # Y-axis range  
+            axis_config={"color": BLUE, "include_numbers": True},  
+        )  
 
-        # 添加标签
-        x_label = axes.get_x_axis_label(Text("花萼长度 (cm)")).scale(0.8)
-        y_label = axes.get_y_axis_label(Text("花萼宽度 (cm)")).scale(0.8)
+        # Add axis labels  
+        x_label = axes.get_x_axis_label(Text("花萼长度 (cm)")).scale(0.8)  
+        y_label = axes.get_y_axis_label(Text("花萼宽度 (cm)")).scale(0.8)  
 
-        # 添加坐标轴和标签到场景
-        self.play(Create(axes), Write(x_label), Write(y_label))
+        # Add axes and labels to the scene  
+        self.play(Create(axes), Write(x_label), Write(y_label))  
 
-        # 使用 numpy 进行数据筛选
-        setosa_indices = np.where(y == 0)[0]
-        versicolor_indices = np.where(y == 1)[0]
+        # Use numpy to filter data points  
+        setosa_indices = np.where(labels == 0)[0]  
+        versicolor_indices = np.where(labels == 1)[0]  
 
-        setosa_points = [(X[i, 0], X[i, 1]) for i in setosa_indices]
-        versicolor_points = [(X[i, 0], X[i, 1]) for i in versicolor_indices]
+        setosa_points = [(features[i, 0], features[i, 1]) for i in setosa_indices]  
+        versicolor_points = [(features[i, 0], features[i, 1]) for i in versicolor_indices]  
 
-        # 创建散点
-        setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]
-        versicolor_dots = [
-            Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points
-        ]
+        # Create scatter points for each species  
+        setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]  
+        versicolor_dots = [Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points]  
 
-        # 创建点的组合
-        dots_group = VGroup(*setosa_dots, *versicolor_dots)
+        # Group all dots together  
+        dots_group = VGroup(*setosa_dots, *versicolor_dots)  
 
-        # 添加散点到场景
-        self.play(*[Create(dot) for dot in setosa_dots + versicolor_dots])
+        # Add scatter points to the scene  
+        self.play(*[Create(dot) for dot in setosa_dots + versicolor_dots])  
 
-        # 绘制超平面
-        hyperplane = axes.plot(
-            lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7]
-        )
+        # Plot the decision boundary (hyperplane)  
+        hyperplane = axes.plot(  
+            lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7]  
+        )  
 
-        # 添加超平面到场景
-        self.play(Create(hyperplane))
+        # Add the hyperplane to the scene  
+        self.play(Create(hyperplane))  
 
-        # 添加文字“如何求这条直线？”
-        annotation_text = (
-            Text("如何求这条直线？", font_size=24)
-            .next_to(hyperplane, UP, buff=0.5)
-            .shift(RIGHT * 1.5)
-        )
+        # Add annotation for the hyperplane  
+        annotation_text = (  
+            Text("如何求这条直线？", font_size=24)  
+            .next_to(hyperplane, UP, buff=0.5)  
+            .shift(RIGHT * 1.5)  
+        )  
 
-        # 创建曲线箭头指向超平面上x为6.75的点
-        x_target = 6.75
-        y_target = slope * x_target + intercept
-        end_point = axes.c2p(x_target, y_target)
-        arrow = CurvedArrow(
-            annotation_text.get_center() + [1.3, 0, 0],
-            end_point,
-            angle=-TAU / 8,
-            color=YELLOW,
-            stroke_width=4,
-            tip_length=0.3,
-        )
-        self.play(Write(annotation_text), Create(arrow))
+        # Create a curved arrow pointing to a specific point on the hyperplane  
+        x_target = 6.75  
+        y_target = slope * x_target + intercept  
+        end_point = axes.c2p(x_target, y_target)  
+        arrow = CurvedArrow(  
+            annotation_text.get_center() + [1.3, 0, 0],  
+            end_point,  
+            angle=-TAU / 8,  
+            color=YELLOW,  
+            stroke_width=4,  
+            tip_length=0.3,  
+        )  
+        self.play(Write(annotation_text), Create(arrow))  
 
-        # 等待
-        self.wait(1)
-        self.play(
-            FadeOut(
-                Group(
-                    annotation_text,
-                    arrow,
-                    axes,
-                    x_label,
-                    y_label,
-                    hyperplane,
-                    dots_group,
-                )
-            )
-        )
-        self.wait(1)
+        # Wait before fading out  
+        self.wait(1)  
+        self.play(  
+            FadeOut(  
+                Group(  
+                    annotation_text,  
+                    arrow,  
+                    axes,  
+                    x_label,  
+                    y_label,  
+                    hyperplane,  
+                    dots_group,  
+                )  
+            )  
+        )  
+        self.wait(1)  
 
 
-class CoordinateSystem(Scene):
-    def construct(self):
-        # 创建坐标轴
-        # 数据处理
-        data_processor = IrisDataProcessor()
-        X, y = data_processor.get_data()
+class CoordinateSystem(Scene):  
+    """Scene to create a coordinate system and visualize the Iris dataset."""  
 
-        # 训练感知机
-        model = SinglePerceptron(learning_rate=0.1, n_iterations=1000)
-        model.fit(X, y)
+    def construct(self):  
+        # Data processing  
+        data_processor = IrisDataProcessor()  
+        features, labels = data_processor.get_data()  
 
-        # 获取直线信息
-        w1, w2 = model.weights
-        b = model.bias - 0.1
-        slope = -w1 / w2
-        intercept = -b / w2
+        # Train the perceptron model  
+        perceptron_model = SinglePerceptron(learning_rate=0.1, n_iterations=1000)  
+        perceptron_model.fit(features, labels)  
 
-        # 创建坐标轴
-        axes = Axes(
-            x_range=[4, 7.5, 0.5],  # x轴范围
-            y_range=[1, 5, 1],  # y轴范围
-            axis_config={"color": BLUE, "include_numbers": True},
-        )
+        # Retrieve line parameters  
+        weight1, weight2 = perceptron_model.weights  
+        bias = perceptron_model.bias - 0.1  
+        slope = -weight1 / weight2  
+        intercept = -bias / weight2  
 
-        # 添加标签
-        x_label = axes.get_x_axis_label(Text("花萼长度 (cm)")).scale(0.8)
-        y_label = axes.get_y_axis_label(Text("花萼宽度 (cm)")).scale(0.8)
+        # Create axes for visualization  
+        axes = Axes(  
+            x_range=[4, 7.5, 0.5],  # X-axis range  
+            y_range=[1, 5, 1],  # Y-axis range  
+            axis_config={"color": BLUE, "include_numbers": True},  
+        )  
 
-        # 添加坐标轴和标签到场景
-        self.play(Create(axes), Write(x_label), Write(y_label))
+        # Add axis labels  
+        x_label = axes.get_x_axis_label(Text("花萼长度 (cm)")).scale(0.8)  
+        y_label = axes.get_y_axis_label(Text("花萼宽度 (cm)")).scale(0.8)  
 
-        # 使用 numpy 进行数据筛选
-        setosa_indices = np.where(y == 0)[0]
-        versicolor_indices = np.where(y == 1)[0]
+        # Add axes and labels to the scene  
+        self.play(Create(axes), Write(x_label), Write(y_label))  
 
-        setosa_points = [(X[i, 0], X[i, 1]) for i in setosa_indices]
-        versicolor_points = [(X[i, 0], X[i, 1]) for i in versicolor_indices]
+        # Use numpy to filter data points  
+        setosa_indices = np.where(labels == 0)[0]  
+        versicolor_indices = np.where(labels == 1)[0]  
 
-        # 创建散点
-        setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]
-        versicolor_dots = [
-            Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points
-        ]
+        setosa_points = [(features[i, 0], features[i, 1]) for i in setosa_indices]  
+        versicolor_points = [(features[i, 0], features[i, 1]) for i in versicolor_indices]  
 
-        # 创建点的组合
-        dots_group = VGroup(*setosa_dots, *versicolor_dots)
+        # Create scatter points for each species  
+        setosa_dots = [Dot(axes.c2p(x, y), color=BLUE) for x, y in setosa_points]  
+        versicolor_dots = [Dot(axes.c2p(x, y), color=ORANGE) for x, y in versicolor_points]  
 
-        # 添加散点到场景
-        self.play(*[Create(dot) for dot in setosa_dots + versicolor_dots])
+        # Group all dots together  
+        dots_group = VGroup(*setosa_dots, *versicolor_dots)  
 
-        # 绘制超平面
-        hyperplane = axes.plot(
-            lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7]
-        )
+        # Add scatter points to the scene  
+        self.play(*[Create(dot) for dot in setosa_dots + versicolor_dots])  
 
-        # 添加超平面到场景
-        self.play(Create(hyperplane))
+        # Plot the decision boundary (hyperplane)  
+        hyperplane = axes.plot(  
+            lambda x: slope * x + intercept, color=WHITE, x_range=[4, 7]  
+        )  
 
-        # 添加文字“如何求这条直线？”
-        annotation_text = (
-            Text("如何求这条直线？", font_size=24)
-            .next_to(hyperplane, UP, buff=0.5)
-            .shift(RIGHT * 1.5)
-        )
+        # Add the hyperplane to the scene  
+        self.play(Create(hyperplane))  
 
-        # 创建曲线箭头指向超平面上x为6.75的点
-        x_target = 6.75
-        y_target = slope * x_target + intercept
-        end_point = axes.c2p(x_target, y_target)
-        arrow = CurvedArrow(
-            annotation_text.get_center() + [1.3, 0, 0],
-            end_point,
-            angle=-TAU / 8,
-            color=YELLOW,
-            stroke_width=4,
-            tip_length=0.3,
-        )
-        self.play(Write(annotation_text), Create(arrow))
+        # Add annotation for the hyperplane  
+        annotation_text = (  
+            Text("如何求这条直线？", font_size=24)  
+            .next_to(hyperplane, UP, buff=0.5)  
+            .shift(RIGHT * 1.5)  
+        )  
 
-        # 等待
-        self.wait(1)
-        self.play(
-            FadeOut(
-                Group(
-                    annotation_text,
-                    arrow,
-                    axes,
-                    x_label,
-                    y_label,
-                    hyperplane,
-                    dots_group,
-                )
-            )
-        )
+        # Create a curved arrow pointing to a specific point on the hyperplane  
+        x_target = 6.75  
+        y_target = slope * x_target + intercept  
+        end_point = axes.c2p(x_target, y_target)  
+        arrow = CurvedArrow(  
+            annotation_text.get_center() + [1.3, 0, 0],  
+            end_point,  
+            angle=-TAU / 8,  
+            color=YELLOW,  
+            stroke_width=4,  
+            tip_length=0.3,  
+        )  
+        self.play(Write(annotation_text), Create(arrow))  
+
+        # Wait before fading out  
+        self.wait(1)  
+        self.play(  
+            FadeOut(  
+                Group(  
+                    annotation_text,  
+                    arrow,  
+                    axes,  
+                    x_label,  
+                    y_label,  
+                    hyperplane,  
+                    dots_group,  
+                )  
+            )  
+        )  
         self.wait(1)

@@ -1,130 +1,125 @@
 """  
-摘要：  
-该代码使用 Manim 库创建两个动画场景，展示感知器模型中的决策过程和符号函数的图像。  
+Summary:  
+This code utilizes the Manim library to create two animated scenes that illustrate the decision-making process in a perceptron model and the graph of the sign function.  
 
-1. JudegeZ：展示感知器的决策规则，包括输入 Z 与阈值 A 的比较，输出分类结果（山鸢尾或变色鸢尾）。通过数学公式和文本标签的组合，清晰地表达了分类逻辑。  
+1. JudgeZ: This scene demonstrates the decision rules of the perceptron, comparing the input \( Z \) with the threshold \( A \) and producing classification results (Iris Setosa or Iris Versicolor). The classification logic is clearly expressed through a combination of mathematical formulas and text labels.  
 
-2. fun_sign：展示损失函数的定义及其图像。通过绘制函数图像，标记不连续点，帮助观众理解符号函数的行为和特性。  
+2. FunSign: This scene presents the definition of the sign function and its graph. By plotting the function and marking discontinuities, it helps the audience understand the behavior and characteristics of the sign function.  
 
-每个场景通过动画效果逐步展示内容，增强了观众的理解和参与感。  
+Each scene gradually reveals its content through animations, enhancing the audience's understanding and engagement. 
 """  
 
-from manim import *
+from manim import *  
 
 
-class JudegeZ(Scene):
-    def construct(self):
-        # 定义字体以支持中文显示
-        chinese_font = "SimHei"  # 确保系统中已安装该字体
+class JudgeZ(Scene):  
+    def construct(self):  
+        # Define font to support Chinese characters  
+        chinese_font = "SimHei"  # Ensure this font is installed on the system  
 
-        # 创建第一个条件行: Z ≥ A -> 1 -> 山鸢尾
-        condition1 = MathTex("Z", "\geq", "A").set_color(YELLOW)
-        arrow1 = MathTex("\\rightarrow").set_color(WHITE)
-        output1 = MathTex("1").set_color(GREEN)
-        arrow2 = MathTex("\\rightarrow").set_color(WHITE)
-        label1 = Text("山鸢尾", font=chinese_font).set_color(BLUE)
+        # Create the first condition line: Z ≥ A -> 1 -> Iris Setosa  
+        condition_greater_equal = MathTex("Z", "\geq", "A").set_color(YELLOW)  
+        arrow_to_output1 = MathTex("\\rightarrow").set_color(WHITE)  
+        output_positive = MathTex("1").set_color(GREEN)  
+        arrow_to_label1 = MathTex("\\rightarrow").set_color(WHITE)  
+        label_setosa = Text("山鸢尾", font=chinese_font).set_color(BLUE)  
 
-        # 创建第二个条件行: Z < A -> -1 -> 变色鸢尾
-        condition2 = MathTex("Z", "<", "A").set_color(YELLOW)
-        arrow3 = MathTex("\\rightarrow").set_color(WHITE)
-        output2 = MathTex("-1").set_color(RED)
-        arrow4 = MathTex("\\rightarrow").set_color(WHITE)
-        label2 = Text("变色鸢尾", font=chinese_font).set_color(BLUE)
+        # Create the second condition line: Z < A -> -1 -> Iris Versicolor  
+        condition_less = MathTex("Z", "<", "A").set_color(YELLOW)  
+        arrow_to_output2 = MathTex("\\rightarrow").set_color(WHITE)  
+        output_negative = MathTex("-1").set_color(RED)  
+        arrow_to_label2 = MathTex("\\rightarrow").set_color(WHITE)  
+        label_versicolor = Text("变色鸢尾", font=chinese_font).set_color(BLUE)  
 
-        # 组合第一个条件行
-        line1 = VGroup(condition1, arrow1, output1, arrow2, label1).arrange(
-            RIGHT, buff=0.5
-        )
+        # Combine the first condition line into a single group  
+        line_condition1 = VGroup(condition_greater_equal, arrow_to_output1, output_positive, arrow_to_label1, label_setosa).arrange(RIGHT, buff=0.5)  
 
-        # 组合第二个条件行
-        line2 = VGroup(condition2, arrow3, output2, arrow4, label2).arrange(
-            RIGHT, buff=0.5
-        )
+        # Combine the second condition line into a single group  
+        line_condition2 = VGroup(condition_less, arrow_to_output2, output_negative, arrow_to_label2, label_versicolor).arrange(RIGHT, buff=0.5)  
 
-        # 将两行垂直排列，并指定对齐边缘为左侧
-        lines = VGroup(line1, line2).arrange(DOWN, buff=1, aligned_edge=LEFT)
+        # Arrange the two lines vertically, aligning them to the left edge  
+        condition_lines = VGroup(line_condition1, line_condition2).arrange(DOWN, buff=1, aligned_edge=LEFT)  
 
-        # 将组合好的内容移动到场景中心
-        lines.move_to(ORIGIN)
+        # Move the combined content to the center of the scene  
+        condition_lines.move_to(ORIGIN)  
 
-        # 逐一显示每一行的各个元素，保持原有显示顺序
-        self.play(Write(condition1), Write(condition2))
-        self.play(Write(arrow1), Write(output1))
-        self.play(Write(arrow3), Write(output2))
-        self.play(Write(arrow2), Write(label1))
-        self.play(Write(arrow4), Write(label2))
-        self.wait(2)
+        # Display each element of the condition lines sequentially  
+        self.play(Write(condition_greater_equal), Write(condition_less))  
+        self.play(Write(arrow_to_output1), Write(output_positive))  
+        self.play(Write(arrow_to_output2), Write(output_negative))  
+        self.play(Write(arrow_to_label1), Write(label_setosa))  
+        self.play(Write(arrow_to_label2), Write(label_versicolor))  
+        self.wait(2)  
 
 
-class fun_sign(Scene):
-    def construct(self):
-        # 定义函数表达式
-        expression = MathTex(
-            r"f(x) = \begin{cases} 1 & x > 0 \\ 0 & x = 0 \\ -1 & x < 0 \end{cases}"
-        )
-        # 将表达式放在屏幕中央
-        self.play(Write(expression))
-        self.wait(1)
+class FunSign(Scene):  
+    def construct(self):  
+        # Define the piecewise function expression  
+        piecewise_expression = MathTex(  
+            r"f(x) = \begin{cases} 1 & x > 0 \\ 0 & x = 0 \\ -1 & x < 0 \end{cases}"  
+        )  
+        # Center the expression on the screen  
+        self.play(Write(piecewise_expression))  
+        self.wait(1)  
 
-        # 同时上移并缩小表达式
-        self.play(expression.animate.scale(0.8).to_edge(UP), run_time=2)
-        self.wait(1)
+        # Move the expression up and scale it down  
+        self.play(piecewise_expression.animate.scale(0.8).to_edge(UP), run_time=2)  
+        self.wait(1)  
 
-        # 创建坐标轴
-        axes = Axes(
-            x_range=[-3, 3, 1],
-            y_range=[-2, 2, 1],
-            axis_config={"color": BLUE},
-        )
+        # Create the axes for the graph  
+        axes = Axes(  
+            x_range=[-3, 3, 1],  # X-axis range  
+            y_range=[-2, 2, 1],  # Y-axis range  
+            axis_config={"color": BLUE},  # Axis color  
+        )  
 
-        # 添加坐标轴标签
-        axes_labels = axes.get_axis_labels(x_label="x", y_label="y")
+        # Add labels to the axes  
+        axes_labels = axes.get_axis_labels(x_label="x", y_label="y")  
 
-        # 定义 sign 函数
-        def sign_function(x):
-            if x > 0:
-                return 1
-            elif x < 0:
-                return -1
-            else:
-                return 0
+        # Define the sign function  
+        def sign_function(x):  
+            if x > 0:  
+                return 1  
+            elif x < 0:  
+                return -1  
+            else:  
+                return 0  
 
-                # 生成函数图像，指定断点
+        # Generate the graph of the sign function, specifying discontinuities  
+        graph = axes.plot(sign_function, color=WHITE, discontinuities=[0])  
 
-        graph = axes.plot(sign_function, color=WHITE, discontinuities=[0])
+        # Create markers for the discontinuities  
+        # (0, 0) solid circle  
+        closed_circle = Dot(axes.c2p(0, 0), color=WHITE)  
+        closed_circle.set_fill(WHITE, opacity=1)  
 
-        # 创建不连续点的标记
-        # (0, 0) 实心圆
-        closed_circle = Dot(axes.c2p(0, 0), color=WHITE)
-        closed_circle.set_fill(WHITE, opacity=1)
+        # (0, 1) and (0, -1) hollow circles  
+        open_circle_pos = Dot(axes.c2p(0, 1), color=WHITE)  
+        open_circle_pos.set_fill(BLACK, opacity=1)  
+        open_circle_pos.set_stroke(WHITE, width=2)  
 
-        # (0, 1) 和 (0, -1) 空心圆
-        open_circle_pos = Dot(axes.c2p(0, 1), color=WHITE)
-        open_circle_pos.set_fill(BLACK, opacity=1)
-        open_circle_pos.set_stroke(WHITE, width=2)
+        open_circle_neg = Dot(axes.c2p(0, -1), color=WHITE)  
+        open_circle_neg.set_fill(BLACK, opacity=1)  
+        open_circle_neg.set_stroke(WHITE, width=2)  
 
-        open_circle_neg = Dot(axes.c2p(0, -1), color=WHITE)
-        open_circle_neg.set_fill(BLACK, opacity=1)
-        open_circle_neg.set_stroke(WHITE, width=2)
+        # Group all coordinate-related objects together  
+        coord_group = VGroup(  
+            axes, axes_labels, graph, closed_circle, open_circle_pos, open_circle_neg  
+        )  
+        coord_group.scale(0.6).move_to(DOWN)  
 
-        # 将所有坐标系相关对象组合在一起
-        coord_group = VGroup(
-            axes, axes_labels, graph, closed_circle, open_circle_pos, open_circle_neg
-        )
-        coord_group.scale(0.6).move_to(DOWN)
+        # Display the axes and labels  
+        self.play(Create(axes), Write(axes_labels))  
+        self.wait(1)  
 
-        # 显示坐标轴和标签
-        self.play(Create(axes), Write(axes_labels))
-        self.wait(1)
+        # Display the function graph  
+        self.play(Create(graph))  
 
-        # 显示函数图像
-        self.play(Create(graph))
-
-        # 添加不连续点标记
-        self.play(
-            FadeIn(closed_circle),
-            FadeIn(open_circle_pos),
-            FadeIn(open_circle_neg),
-            run_time=1,
-        )
+        # Add markers for the discontinuities  
+        self.play(  
+            FadeIn(closed_circle),  
+            FadeIn(open_circle_pos),  
+            FadeIn(open_circle_neg),  
+            run_time=1,  
+        )  
         self.wait(3)

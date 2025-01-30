@@ -1,198 +1,205 @@
 """  
-摘要：  
-该代码使用 TensorFlow 和 Manim 库加载 MNIST 数据集中的手写数字图片，并将其可视化为像素方块。主要功能包括：  
+Summary:  
+This code uses TensorFlow and the Manim library to load handwritten digit images from the MNIST dataset and visualize them as pixel squares. The main functionalities include:  
 
-1. **加载 MNIST 图片**：通过 `load_mnist_image` 函数加载指定标签的手写数字图片，并返回图片数组和标签。  
-2. **创建像素组**：通过 `create_pixel_group` 函数将加载的 28x28 灰度图片转换为一组可视化的像素方块，每个方块的透明度根据对应的像素值设置。  
-
+1. Loading MNIST Images: The `load_mnist_image` function loads a specified label's handwritten digit image and returns the image array and label.  
+2. Creating Pixel Group: The `create_pixel_group` function converts the loaded 28x28 grayscale image into a group of visual pixel squares, with each square's opacity set according to the corresponding pixel value.  
 """  
 
-from manim import *
-import tensorflow as tf
-
+from manim import *  
+import tensorflow as tf  
+import numpy as np  
 
 def load_mnist_image(label_target=1, index=0):  
     """  
-    加载 MNIST 数据集并选择指定标签的图片。  
+    Load the MNIST dataset and select the specified label's image.  
 
-    参数:  
-        label_target (int): 目标标签（0-9）。  
-        index (int): 选择的图片在目标标签中的索引。  
+    Parameters:  
+        label_target (int): Target label (0-9).  
+        index (int): The index of the selected image within the target label.  
 
-    返回:  
-        image (np.ndarray): 选中的图片数组。  
-        label (int): 图片的标签。  
+    Returns:  
+        image (np.ndarray): The selected image array.  
+        label (int): The label of the image.  
     """  
-    # 加载 MNIST 数据集  
+    # Load the MNIST dataset  
     mnist = tf.keras.datasets.mnist  
     (x_train, y_train), (x_test, y_test) = mnist.load_data()  
-    images = np.concatenate((x_train, x_test), axis=0)  
-    labels = np.concatenate((y_train, y_test), axis=0)  
+    images = np.concatenate((x_train, x_test), axis=0)  # Combine training and testing images  
+    labels = np.concatenate((y_train, y_test), axis=0)  # Combine training and testing labels  
     
-    # 找到所有目标标签的索引  
+    # Find all indices of the target label  
     target_indices = np.where(labels == label_target)[0]  
     
     if index >= len(target_indices):  
-        raise IndexError(f"标签为 {label_target} 的图片不足 {index + 1} 张。")  
+        raise IndexError(f"There are not enough images for label {label_target} at index {index + 1}.")  
     
-    selected_index = target_indices[index]  
-    image = images[selected_index]  
-    label = labels[selected_index]  
+    selected_index = target_indices[index]  # Select the index of the desired image  
+    image = images[selected_index]  # Get the image array  
+    label = labels[selected_index]  # Get the corresponding label  
     
-    print(f'选择的图片索引: {selected_index}')  
-    print(f'标签: {label}')  
+    print(f'Selected image index: {selected_index}')  
+    print(f'Label: {label}')  
     
     return image, label  
 
 def create_pixel_group(image, pixel_size=0.2, spacing=0.05):  
     """  
-    根据输入的图片数组创建一个像素组。  
+    Create a pixel group based on the input image array.  
 
-    参数:  
-        image (np.ndarray): 28x28 的灰度图片数组。  
-        pixel_size (float): 每个像素方块的边长。  
-        spacing (float): 方块之间的间距。  
+    Parameters:  
+        image (np.ndarray): 28x28 grayscale image array.  
+        pixel_size (float): The side length of each pixel square.  
+        spacing (float): The spacing between the squares.  
 
-    返回:  
-        pixel_group (VGroup): 包含所有像素方块的组。  
+    Returns:  
+        pixel_group (VGroup): A group containing all pixel squares.  
     """  
-    pixel_group = VGroup()  
+    pixel_group = VGroup()  # Create a VGroup to hold pixel squares  
     
-    for i in range(28):  
-        for j in range(28):  
-            # 获取像素值（0-255），转换为灰度颜色并反转  
+    for i in range(28):  # Iterate over rows  
+        for j in range(28):  # Iterate over columns  
+            # Get pixel value (0-255), convert to grayscale color and invert  
             pixel_value = image[i, j]  
-            gray = pixel_value / 255  # 0为黑色，1为白色  
+            gray = pixel_value / 255  # Normalize pixel value to range [0, 1]  
             
-            # 创建一个方块代表像素  
+            # Create a square to represent the pixel  
             square = Square(  
                 side_length=pixel_size,  
                 fill_color=WHITE,  
-                fill_opacity=gray,  # 根据灰度设置不透明度  
+                fill_opacity=gray,  # Set opacity based on grayscale value  
                 stroke_width=0.2,  
                 stroke_color=WHITE  
             )  
+            # Position the square in the grid  
             square.shift(  
                 (j - 14) * (pixel_size + spacing) * RIGHT +  
                 (14 - i) * (pixel_size + spacing) * UP  
             )  
-            pixel_group.add(square)  
+            pixel_group.add(square)  # Add the square to the pixel group  
     
     return pixel_group  
 
-# 根据激活值设置颜色和透明度  
+# Set colors and opacities based on activation values  
 def set_activation(circles, activation_values):  
     animations = []  
     for circle, value in zip(circles, activation_values):  
         if value == -1:  
-            continue  # 省略号跳过  
-        color = interpolate_color(BLACK, WHITE, value)  
-        opacity = value  
-        animations.append(circle.animate.set_fill(color, opacity=opacity))  
+            continue  # Skip if value is -1 (indicating no activation)  
+        color = interpolate_color(BLACK, WHITE, value)  # Interpolate color based on activation value  
+        opacity = value  # Set opacity based on activation value  
+        animations.append(circle.animate.set_fill(color, opacity=opacity))  # Animate the color change  
     return animations  
 
 def generate_circles_with_vertical_ellipsis(  
-    n,   
-    radius=0.3,   
-    spacing=0.8,   
+    n,  
+    radius=0.3,  
+    spacing=0.8,  
     color=WHITE,  
     ellipsis_dots=3,  
     ellipsis_dot_radius=None,  
     ellipsis_buff=0.1,  
     ellipsis_color=None,  
-    stroke_width=1.5  # 设置圆环厚度  
+    stroke_width=1.5  # Set the thickness of the circle stroke  
 ):  
     """  
-    生成一列圆圈，超过16个时上下各八个，中间用垂直排列的省略号代替。  
+    Generate a column of circles. If there are more than 16, display eight on top and bottom,  
+    with vertically arranged ellipses in the middle.  
 
-    参数：  
-    - n (int): 圆圈总数  
-    - radius (float): 圆圈半径  
-    - spacing (float): 圆圈之间的垂直间距  
-    - color (str/Color): 圆圈和省略号的颜色  
-    - ellipsis_dots (int): 省略号中点的数量，默认3  
-    - ellipsis_dot_radius (float): 省略号中每个点的半径，默认radius/6  
-    - ellipsis_buff (float): 省略号中点之间的垂直间距，默认0.1  
-    - ellipsis_color (str/Color): 省略号中点的颜色，默认与圆圈颜色相同  
-    - stroke_width (float): 圆圈边框的厚度，默认1.5  
+    Parameters:  
+    - n (int): Total number of circles  
+    - radius (float): Circle radius  
+    - spacing (float): Vertical spacing between circles  
+    - color (str/Color): Color of circles and ellipses  
+    - ellipsis_dots (int): Number of dots in the ellipsis, default is 3  
+    - ellipsis_dot_radius (float): Radius of each dot in the ellipsis, default is radius/6  
+    - ellipsis_buff (float): Vertical spacing between dots in the ellipsis, default is 0.1  
+    - ellipsis_color (str/Color): Color of dots in the ellipsis, default is the same as circle color  
+    - stroke_width (float): Thickness of the circle border, default is 1.5  
 
-    返回:  
-    - elements (VGroup): 包含圆圈和省略号的组合  
-    - circles (List[Circle]): 所有圆圈的列表  
+    Returns:  
+    - elements (VGroup): A group containing circles and ellipses  
+    - circles (List[Circle]): A list of all circles  
     """  
-    elements = VGroup()  
-    circles = []  # 存储所有圆圈的列表  
+    elements = VGroup()  # Create a VGroup to hold circles and ellipses  
+    circles = []  # List to store all circles  
 
-    # 设置省略号点的半径和颜色  
+    # Set the radius and color for ellipsis dots  
     if ellipsis_dot_radius is None:  
         ellipsis_dot_radius = radius / 6  
     if ellipsis_color is None:  
         ellipsis_color = color  
 
     if n <= 16:  
-        # 全部显示圆圈  
+        # Display all circles  
         for i in range(n):  
             circle = Circle(  
-                radius=radius,   
+                radius=radius,  
                 color=color,  
-                stroke_width=stroke_width  # 设置圆环厚度  
+                stroke_width=stroke_width  # Set the thickness of the circle stroke  
             )  
-            circle.number = i + 1  # 添加编号属性  
+            circle.number = i + 1  # Add a numbering attribute  
             circles.append(circle)  
             elements.add(circle)  
     else:  
-        # 上八个圆圈  
+        # Top eight circles  
         for i in range(8):  
             circle = Circle(  
-                radius=radius,   
+                radius=radius,  
                 color=color,  
-                stroke_width=stroke_width  # 设置圆环厚度  
+                stroke_width=stroke_width  # Set the thickness of the circle stroke  
             )  
-            circle.number = i + 1  # 添加编号属性  
+            circle.number = i + 1  # Add a numbering attribute  
             circles.append(circle)  
             elements.add(circle)  
         
-        # 添加垂直排列的省略号  
+        # Add vertically arranged ellipses  
         ellipsis = VGroup()  
         for _ in range(ellipsis_dots):  
             dot = Dot(  
-                radius=ellipsis_dot_radius,   
+                radius=ellipsis_dot_radius,  
                 color=ellipsis_color  
             )  
             ellipsis.add(dot)  
-        ellipsis.arrange(DOWN, buff=ellipsis_buff)  
+        ellipsis.arrange(DOWN, buff=ellipsis_buff)  # Arrange dots vertically  
         elements.add(ellipsis)  
         
-        # 下八个圆圈  
+        # Bottom eight circles  
         for i in range(n - 8, n):  
             circle = Circle(  
-                radius=radius,   
+                radius=radius,  
                 color=color,  
-                stroke_width=stroke_width  # 设置圆环厚度  
+                stroke_width=stroke_width  # Set the thickness of the circle stroke  
             )  
-            circle.number = i + 1  # 添加编号属性  
+            circle.number = i + 1  # Add a numbering attribute  
             circles.append(circle)  
             elements.add(circle)  
 
-    # 设置圆圈之间的间距  
+    # Set spacing between circles  
     elements.arrange(DOWN, buff=spacing / 4)  
     return elements, circles  
 
-
 def add_full_connections_between_groups(  
-    group1_circles,   
-    group2_circles,   
-    connection_color=GRAY,   
-    stroke_width=0.5,   
+    group1_circles,  
+    group2_circles,  
+    connection_color=GRAY,  
+    stroke_width=0.5,  
     buff=0.1  
 ):  
     """  
-    在两组圆圈之间添加全连接。  
+    Add full connections between two groups of circles.  
 
-    参数和返回值同上。  
+    Parameters:  
+        group1_circles (List[Circle]): The first group of circles.  
+        group2_circles (List[Circle]): The second group of circles.  
+        connection_color (Color): Color of the connecting lines.  
+        stroke_width (float): Thickness of the connecting lines.  
+        buff (float): Buffer space between circles and lines.  
 
+    Returns:  
+        lines (VGroup): A group containing all connecting lines.  
     """  
-    lines = VGroup()  
+    lines = VGroup()  # Create a VGroup to hold connecting lines  
     for circle1 in group1_circles:  
         for circle2 in group2_circles:  
             line = Line(  
@@ -201,12 +208,21 @@ def add_full_connections_between_groups(
                 color=connection_color,  
                 stroke_width=stroke_width  
             )  
-            lines.add(line)  
-    return lines
+            lines.add(line)  # Add the line to the group  
+    return lines  
 
 def split_line_into_sublines(line, num_subsegments=100, overlap=0.01, stroke_width=2):  
     """  
-    将线段分割成多个子线段，并增加重叠以减少分界线的明显性。  
+    Split a line segment into multiple sub-segments and add overlap to reduce the visibility of boundaries.  
+
+    Parameters:  
+        line (Line): The line to be split.  
+        num_subsegments (int): Number of sub-segments to create.  
+        overlap (float): Amount of overlap between sub-segments.  
+        stroke_width (float): Thickness of the sub-segments.  
+
+    Returns:  
+        sublines (VGroup): A group containing all sub-segments.  
     """  
     sublines = VGroup(*[  
         Line(  
@@ -220,62 +236,80 @@ def split_line_into_sublines(line, num_subsegments=100, overlap=0.01, stroke_wid
 
 def continuous_color_wave(mob, alpha):  
     """  
-    定义持续颜色波动的函数。  
-    颜色从蓝色逐渐变化到黄色，再回到蓝色，循环往复。  
+    Define a function for continuous color wave fluctuation.  
+    The color transitions from blue to yellow and back to blue in a loop.  
+
+    Parameters:  
+        mob (Mobject): The Manim object to apply the color wave to.  
+        alpha (float): A value between 0 and 1 representing the progress of the animation.  
     """  
-    phase = alpha * TAU  
-    gradient_colors = color_gradient([BLUE, YELLOW, BLUE], 100)  
-    num_subsegments = len(mob)  
+    phase = alpha * TAU  # Calculate the phase based on alpha  
+    gradient_colors = color_gradient([BLUE, YELLOW, BLUE], 100)  # Create a gradient color array  
+    num_subsegments = len(mob)  # Get the number of segments in the object  
     
     for i in range(num_subsegments):  
         t = i / num_subsegments  
-        offset = (t * TAU + phase) % TAU  
-        color_value = (np.sin(offset) + 1) / 2  # 范围 [0,1]  
-        color_index = int(color_value * (len(gradient_colors) - 1))  
-        current_color = gradient_colors[color_index]  
-        mob[i].set_color(current_color)  
+        offset = (t * TAU + phase) % TAU  # Calculate the offset for color cycling  
+        color_value = (np.sin(offset) + 1) / 2  # Normalize to range [0, 1]  
+        color_index = int(color_value * (len(gradient_colors) - 1))  # Get the index for the gradient color  
+        current_color = gradient_colors[color_index]  # Get the current color from the gradient  
+        mob[i].set_color(current_color)  # Set the color of the segment  
 
 def single_pulse_wave(mob, alpha):  
-        """  
-        让脉冲中心从 -pulse_width 跑到 1 + pulse_width，  
-        确保动画结束时脉冲尾部也能到达线段末端。  
-        """  
-        pulse_width = 0.05  
-        num_subsegments = len(mob)  
-
-        # 将 alpha 的 [0, 1] 映射到脉冲中心的 [-pulse_width, 1 + pulse_width]  
-        current_pulse = -pulse_width + alpha * (1 + pulse_width - (-pulse_width))  
-        # 或者直接： current_pulse = (alpha * (1 + 2 * pulse_width)) - pulse_width  
-
-        for i in range(num_subsegments):  
-            t = i / num_subsegments  
-            if current_pulse - pulse_width < t < current_pulse + pulse_width:  
-                mob[i].set_color(YELLOW)  
-            else:  
-                mob[i].set_color(BLUE)    
-
-def animate_line_wave(line, wave_type="continuous",   
-                        num_subsegments=100, overlap=0.01, stroke_width=2):  
     """  
-    接受一条Line，将其分段并根据 wave_type 参数播放相应动画。  
-    wave_type 支持 "continuous"（持续波动）或 "pulse"（脉冲波动）。  
+    Create a pulse effect where the pulse center moves from -pulse_width to 1 + pulse_width,  
+    ensuring that the pulse tail reaches the end of the line segment at the end of the animation.  
+
+    Parameters:  
+        mob (Mobject): The Manim object to apply the pulse effect to.  
+        alpha (float): A value between 0 and 1 representing the progress of the animation.  
     """  
-    # 1. 拆分线段   
+    pulse_width = 0.05  # Width of the pulse  
+    num_subsegments = len(mob)  # Get the number of segments in the object  
+
+    # Map alpha from [0, 1] to the pulse center range [-pulse_width, 1 + pulse_width]  
+    current_pulse = -pulse_width + alpha * (1 + pulse_width - (-pulse_width))  
+
+    for i in range(num_subsegments):  
+        t = i / num_subsegments  
+        if current_pulse - pulse_width < t < current_pulse + pulse_width:  
+            mob[i].set_color(YELLOW)  # Set color to yellow within the pulse range  
+        else:  
+            mob[i].set_color(BLUE)  # Set color to blue outside the pulse range  
+
+def animate_line_wave(line, wave_type="continuous",  
+                      num_subsegments=100, overlap=0.01, stroke_width=2):  
+    """  
+    Accept a Line, split it into segments, and play the corresponding animation based on the wave_type parameter.  
+    wave_type supports "continuous" (continuous wave) or "pulse" (pulse wave).  
+
+    Parameters:  
+        line (Line): The line to animate.  
+        wave_type (str): The type of wave animation to apply.  
+        num_subsegments (int): Number of sub-segments to create.  
+        overlap (float): Amount of overlap between sub-segments.  
+        stroke_width (float): Thickness of the sub-segments.  
+
+    Returns:  
+        sublines (VGroup): A group containing all sub-segments.  
+        line_wave_animation (Animation): The animation for the wave effect.  
+    """  
+    # 1. Split the line into sub-segments  
     sublines = split_line_into_sublines(  
         line, num_subsegments, overlap, stroke_width  
     )  
     
-    # 2. 根据类型选择动画更新函数  
+    # 2. Choose the animation update function based on wave type  
     if wave_type == "continuous":  
         wave_func = continuous_color_wave  
     elif wave_type == "pulse":  
         wave_func = single_pulse_wave  
     else:  
-        raise ValueError("wave_type 只能是 'continuous' 或 'pulse'。")  
+        raise ValueError("wave_type must be 'continuous' or 'pulse'.")  
     
-    # 3. 创建动画（UpdateFromAlphaFunc 会在播放时连续调用 wave_func）  
+    # 3. Create the animation (UpdateFromAlphaFunc will continuously call wave_func during playback)  
     line_wave_animation = UpdateFromAlphaFunc(  
-        sublines,   
+        sublines,  
         lambda m, alpha: wave_func(m, alpha)  
     )  
     
