@@ -9,7 +9,7 @@
 """  
 
 from manim import *
-from perceptron_models import SinglePerceptron
+from perceptron_models import SingleLayerPerceptron
 from DataProcessor import IrisDataProcessor
 
 
@@ -157,7 +157,7 @@ class LirdDataVisual(Scene):
         X, y = data_processor.get_data()
 
         # 训练感知机
-        model = SinglePerceptron(learning_rate=0.1, n_iterations=1000)
+        model = SingleLayerPerceptron(learning_rate=0.1, n_iterations=1000)
         model.fit(X, y)
 
         # 获取直线信息
@@ -254,7 +254,7 @@ class CoordinateSystem(Scene):
         X, y = data_processor.get_data()
 
         # 训练感知机
-        model = SinglePerceptron(learning_rate=0.1, n_iterations=1000)
+        model = SingleLayerPerceptron(learning_rate=0.1, n_iterations=1000)
         model.fit(X, y)
 
         # 获取直线信息
